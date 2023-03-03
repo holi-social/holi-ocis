@@ -1,0 +1,29 @@
+version: "3.7"
+
+services:
+  ocis:
+    image: owncloud/ocis:${OCIS_DOCKER_TAG:-latest}
+    entrypoint:
+      - /bin/sh
+    command: ["-c", "ocis init || true; ocis server"]
+    environment:
+      PROXY_AUTOPROVISION_ACCOUNTS: "true"
+      PROXY_OIDC_REWRITE_WELLKNOWN: "true"
+      OCIS_OIDC_ISSUER: https://${OCIS_OIDC_ISSUER}
+      WEB_OIDC_CLIENT_ID: ${OCIS_OIDC_CLIENT_ID}
+      OCIS_URL: https://${OCIS_DOMAIN}
+      OCIS_LOG_LEVEL: ${OCIS_LOG_LEVEL:-info}
+      OCIS_LOG_COLOR: "${OCIS_LOG_COLOR:-false}"
+      OCIS_INSECURE: "${OCIS_INSECURE}"
+    volumes:
+      - ocis-config:/etc/ocis
+      - ocis-data:/var/lib/ocis
+    ports:
+      - 127.0.0.1:9200:9200
+    logging:
+      driver: ${OCIS_LOG_DRIVER:-local}
+    restart: always
+
+volumes:
+  ocis-config:
+  ocis-data:
