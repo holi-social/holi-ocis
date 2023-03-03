@@ -61,12 +61,7 @@ resource "google_cloud_run_service" "owncloud_api" {
         # }
         env {
           name  = "OCIS_OIDC_CLIENT_ID"
-          value_from {
-            secret_key_ref {
-              key  = "latest"
-              name = local.environment_name == "production" ? "OCIS_OIDC_CLIENT_ID_PRODUCTION" : "OCIS_OIDC_CLIENT_ID_DEVELOPMENT"
-            }
-          }
+          value = local.environment_name == "production" ? "OCIS_OIDC_CLIENT_ID_PRODUCTION" : "OCIS_OIDC_CLIENT_ID_DEVELOPMENT"
         }
         resources {
           limits = {
