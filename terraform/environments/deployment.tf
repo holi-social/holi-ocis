@@ -38,7 +38,7 @@ resource "google_cloud_run_service" "ocis_api" {
     spec {
       service_account_name = data.terraform_remote_state.holi_ocis_api_common_state.outputs.cloud_run_service_account_email
       containers {
-        image = "${data.terraform_remote_state.holi_infra_state.outputs.gcr_location}/holi-ocis-api:${var.image_tag}"
+        image = "${data.terraform_remote_state.holi_infra_state.outputs.gcr_location}/holi-ocis:${var.image_tag}"
         ports {
           container_port = 9200
         }
