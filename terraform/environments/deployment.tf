@@ -5,7 +5,7 @@
  */
 resource "random_id" "main" {
   byte_length = 2
-  prefix      = "ocis-api-${local.environment_name}-"
+  prefix      = "owncloud-api-${local.environment_name}-"
 }
 
 resource "google_project_service" "service" {
@@ -27,7 +27,7 @@ variable "image_tag" {
   nullable = false
 }
 
-resource "google_cloud_run_service" "ocis_api" {
+resource "google_cloud_run_service" "owncloud_api" {
   project  = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
   name     = random_id.main.hex
   location = "europe-north1" # finland, low CO2 emissions
@@ -36,9 +36,9 @@ resource "google_cloud_run_service" "ocis_api" {
 
   template {
     spec {
-      service_account_name = data.terraform_remote_state.holi_ocis_api_common_state.outputs.cloud_run_service_account_email
+      service_account_name = data.terraform_remote_state.holi_owncloud_api_common_state.outputs.cloud_run_service_account_email
       containers {
-        image = "${data.terraform_remote_state.holi_infra_state.outputs.gcr_location}/holi-ocis:${var.image_tag}"
+        image = "${data.terraform_remote_state.holi_infra_state.outputs.gcr_location}/holi-owncloud:${var.image_tag}"
         ports {
           container_port = 9200
         }
@@ -111,23 +111,23 @@ resource "google_cloud_run_service" "ocis_api" {
   depends_on = [google_project_service.service]
 }
 
-resource "google_cloud_run_domain_mapping" "ocis_api" {
-  project = google_cloud_run_service.ocis_api.project
+resource "google_cloud_run_domain_mapping" "owncloud_api" {
+  project = google_cloud_run_service.owncloud_api.project
   # location needs to be the same as the service's
-  location = google_cloud_run_service.ocis_api.location
+  location = google_cloud_run_service.owncloud_api.location
   name     = local.dns_name
 
   metadata {
-    namespace = google_cloud_run_service.ocis_api.project
+    namespace = google_cloud_run_service.owncloud_api.project
   }
 
   spec {
-    route_name = google_cloud_run_service.ocis_api.name
+    route_name = google_cloud_run_service.owncloud_api.name
   }
 }
 
 # TODO security: Can we restrict this to a specific service account (of the API proxy) some day?
-data "google_iam_policy" "ocis_api" {
+data "google_iam_policy" "owncloud_api" {
   binding {
     role = "roles/run.invoker"
     members = [
@@ -136,10 +136,10 @@ data "google_iam_policy" "ocis_api" {
   }
 }
 
-resource "google_cloud_run_service_iam_policy" "ocis_api" {
-  location = google_cloud_run_service.ocis_api.location
-  project  = google_cloud_run_service.ocis_api.project
-  service  = google_cloud_run_service.ocis_api.name
+resource "google_cloud_run_service_iam_policy" "owncloud_api" {
+  location = google_cloud_run_service.owncloud_api.location
+  project  = google_cloud_run_service.owncloud_api.project
+  service  = google_cloud_run_service.owncloud_api.name
 
-  policy_data = data.google_iam_policy.ocis_api.policy_data
+  policy_data = data.google_iam_policy.owncloud_api.policy_data
 }

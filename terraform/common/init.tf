@@ -1,7 +1,7 @@
 terraform {
   backend "gcs" {
     bucket = "holi-shared-terraform-state"
-    prefix = "ocis-api-common"
+    prefix = "owncloud-api-common"
   }
 }
 
