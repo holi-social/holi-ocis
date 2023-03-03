@@ -26,7 +26,7 @@ build_docker:
     - cat $GOOGLE_CLOUD_SERVICE_ACCOUNT | docker login -u _json_key --password-stdin https://eu.gcr.io
   script:
     - docker pull $GCR_IMAGE || true # Allows us to use --cache-from
-    - docker build docker build \
+    - docker build \
       --build-arg OCIS_OIDC_ISSUER=$OCIS_OIDC_ISSUER \
       --build-arg OCIS_OIDC_CLIENT_ID=$OCIS_OIDC_CLIENT_ID \
       --build-arg OCIS_DOMAIN=$OCIS_OIDC_CLIENT_ID \
