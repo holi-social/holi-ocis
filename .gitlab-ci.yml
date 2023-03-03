@@ -15,7 +15,7 @@ default:
     - holi-small # build on smaller machine
 
 build_docker:
-  image: docker/compose:latest
+  image: docker:20.10
   stage: "build"
   services:
     - docker:20.10-dind
@@ -25,10 +25,15 @@ build_docker:
   before_script:
     - cat $GOOGLE_CLOUD_SERVICE_ACCOUNT | docker login -u _json_key --password-stdin https://eu.gcr.io
   script:
-    - docker compose pull $GCR_IMAGE
-    - docker compose build -t $GCR_IMAGE:$CI_COMMIT_SHA -t $GCR_IMAGE:$CI_COMMIT_REF_SLUG .
-    - docker compose push $GCR_IMAGE:$CI_COMMIT_SHA # this is the tag that is used for deployment
-    - docker compose push $GCR_IMAGE:$CI_COMMIT_REF_SLUG # just for easily knowing which is the last image for a branch
+    - docker pull $GCR_IMAGE || true # Allows us to use --cache-from
+    - docker build docker build \
+      --build-arg OCIS_OIDC_ISSUER=$OCIS_OIDC_ISSUER \
+      --build-arg OCIS_OIDC_CLIENT_ID=$OCIS_OIDC_CLIENT_ID \
+      --build-arg OCIS_DOMAIN=$OCIS_OIDC_CLIENT_ID \
+      --build-arg OCIS_INSECURE=$OCIS_INSECURE \
+      --cache-from $GCR_IMAGE -t $GCR_IMAGE:$CI_COMMIT_SHA -t $GCR_IMAGE:$CI_COMMIT_REF_SLUG .
+    - docker push $GCR_IMAGE:$CI_COMMIT_SHA # this is the tag that is used for deployment
+    - docker push $GCR_IMAGE:$CI_COMMIT_REF_SLUG # just for easily knowing which is the last image for a branch
 
 .deploy:
   stage: "deploy"
