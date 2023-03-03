@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   ocis:
-    image: owncloud/ocis:${OCIS_DOCKER_TAG:-latest}
+    image: owncloud/ocis:latest@sha256:663eec8686531df0a1d33e010d8e6a5ebee2c54c176b7cdac61e24eb9bc85e42
     entrypoint:
       - /bin/sh
     command: ["-c", "ocis init || true; ocis server"]
