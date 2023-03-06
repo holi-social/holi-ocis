@@ -13,6 +13,7 @@ resource "google_project_service" "service" {
     "run.googleapis.com",
     "servicecontrol.googleapis.com",
     "servicemanagement.googleapis.com",
+    "file.googleapis.com"
   ])
 
   service = each.key
@@ -62,6 +63,16 @@ resource "google_cloud_run_service" "owncloud_api" {
         env {
           name  = "OCIS_OIDC_CLIENT_ID"
           value = local.environment_name == "production" ? "OCIS_OIDC_CLIENT_ID_PRODUCTION" : "OCIS_OIDC_CLIENT_ID_DEVELOPMENT"
+        }
+        env {
+          name = "FILESTORE_IP_ADDRESS"
+          # TODO(SF) handle production
+          value = data.terraform_remote_state.holi_infra_state.outputs.filestore_development_ip
+        }
+        env {
+          name = "FILE_SHARE_NAME"
+          # TODO(SF) handle production
+          value = data.terraform_remote_state.holi_infra_state.outputs.filestore_development_fileshare_name
         }
         resources {
           limits = {

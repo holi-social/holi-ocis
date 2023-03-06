@@ -15,8 +15,32 @@ ENV OCIS_LOG_LEVEL="info"
 ENV OCIS_LOG_COLOR="false"
 ENV OCIS_INSECURE="${OCIS_INSECURE}"
 
-ENTRYPOINT ["/bin/sh", "-c", "ocis init || true; ocis server"]
+# Set fallback mount directory
+ENV MNT_DIR /mnt/nfs/filestore
+
+ENV OCIS_BASE_DATA_PATH="${MNT_DIR}"
+
+# Install system dependencies
+USER root
+
+RUN addgroup -S app && adduser -S -G app app
+
+RUN apk update && apk add --no-cache tini nfs-utils
+
+# ENTRYPOINT ["/bin/sh", "-c", "ocis init || true; ocis server"]
+# mount -o nolock $FILESTORE_IP_ADDRESS:/$FILE_SHARE_NAME $MNT_DIR
 
 EXPOSE 9200
 
-CMD []
+# Copy local code to the container image.
+WORKDIR /app
+COPY ./app ./app
+
+USER app
+
+# Use tini to manage zombie processes and signal forwarding
+# https://github.com/krallin/tini
+ENTRYPOINT ["/usr/bin/tini", "--"]
+
+# Pass the startup script as arguments to tini
+CMD ["/app/run.sh"]
