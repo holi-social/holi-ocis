@@ -27,7 +27,7 @@ EXPOSE 9200
 
 # Copy local code to the container image.
 WORKDIR /app
-COPY ./app ./app
+COPY ./app /app
 
 # Ensure the script is executable
 RUN chmod +x /app/run.sh

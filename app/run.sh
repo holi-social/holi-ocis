@@ -1,5 +1,6 @@
+#!/usr/bin/env sh
+
 # Based on https://cloud.google.com/run/docs/tutorials/network-filesystems-filestore#defining_your_processes_in_the_startup_script
-#!/usr/bin/env bash
 set -eo pipefail
 
 # Create mount directory for service.
