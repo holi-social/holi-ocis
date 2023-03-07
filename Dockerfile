@@ -16,10 +16,9 @@ ENV OCIS_LOG_COLOR="false"
 ENV OCIS_INSECURE="${OCIS_INSECURE}"
 
 # Based on https://cloud.google.com/run/docs/tutorials/network-filesystems-filestore#defining_your_environment_configuration_with_the_dockerfile
+
 # Install system dependencies
 USER root
-
-RUN addgroup -S ocis && adduser -S -G ocis ocis
 
 RUN apk update && apk add --no-cache tini nfs-utils
 
@@ -29,13 +28,8 @@ EXPOSE 9200
 WORKDIR /app
 COPY ./app /app
 
-# Create mount directory for service.
-RUN mkdir -p /mnt/nfs/filestore
-
 # Ensure the script is executable
 RUN chmod +x /app/run.sh
-
-USER ocis
 
 # Use tini to manage zombie processes and signal forwarding
 # https://github.com/krallin/tini
