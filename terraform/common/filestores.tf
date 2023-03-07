@@ -21,7 +21,7 @@ resource "google_filestore_instance" "ocis_development" {
     network = data.terraform_remote_state.holi_infra_state.outputs.vpc_access_connector_name # = "default"
     modes   = ["MODE_IPV4"]
     # TODO(SF) used by redis
-    # connect_mode       = "PRIVATE_SERVICE_ACCESS"
+    connect_mode = "PRIVATE_SERVICE_ACCESS"
   }
 }
 
@@ -48,7 +48,7 @@ resource "google_filestore_instance" "ocis_production" {
     network = data.terraform_remote_state.holi_infra_state.outputs.vpc_access_connector_name # = "default"
     modes   = ["MODE_IPV4"]
     # TODO(SF) used by redis
-    # connect_mode       = "PRIVATE_SERVICE_ACCESS"
+    connect_mode = "PRIVATE_SERVICE_ACCESS"
   }
 }
 
