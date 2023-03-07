@@ -28,27 +28,6 @@ variable "image_tag" {
   nullable = false
 }
 
-resource "google_filestore_instance" "owncloud_filestore" {
-  name     = random_id.main.hex
-  location = "europe-north1" # finland, low CO2 emissions
-  tier = "BASIC_HDD" # standard tier
-  project  = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
-
-  file_shares {
-    capacity_gb = 1024 # minimum value for standard tier
-    name        = "ocis-metadata"
-    # TODO(SF) source_backup
-  }
-
-  networks {
-    # TODO(SF) ??
-    network = data.terraform_remote_state.holi_infra_state.outputs.vpc_access_connector_name
-    modes   = ["MODE_IPV4"]
-    # TODO(SF) used by redis
-    # connect_mode       = "PRIVATE_SERVICE_ACCESS"
-  }
-}
-
 resource "google_cloud_run_service" "owncloud_api" {
   project  = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
   name     = random_id.main.hex
@@ -87,11 +66,11 @@ resource "google_cloud_run_service" "owncloud_api" {
         }
         env {
           name = "FILESTORE_IP_ADDRESS"
-          value = google_filestore_instance.owncloud_filestore.networks.0.ip_addresses.0
+          value = local.environment_name == "production" ? data.terraform_remote_state.holi_owncloud_api_common_state.outputs.ocis_filestore_production_ip : data.terraform_remote_state.holi_owncloud_api_common_state.outputs.ocis_filestore_development_ip
         }
         env {
           name = "FILESTORE_FILESHARE_NAME"
-          value = google_filestore_instance.owncloud_filestore.file_shares.0.name
+          value = local.environment_name == "production" ? data.terraform_remote_state.holi_owncloud_api_common_state.outputs.ocis_filestore_production_fileshare_name : data.terraform_remote_state.holi_owncloud_api_common_state.outputs.ocis_filestore_development_fileshare_name
         }
         env {
           name = "OCIS_BASE_DATA_PATH"
