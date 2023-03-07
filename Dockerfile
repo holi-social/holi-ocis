@@ -29,6 +29,9 @@ EXPOSE 9200
 WORKDIR /app
 COPY ./app ./app
 
+# Ensure the script is executable
+RUN chmod +x /app/run.sh
+
 USER ocis
 
 # Use tini to manage zombie processes and signal forwarding
