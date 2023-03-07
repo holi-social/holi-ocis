@@ -33,7 +33,7 @@ USER ocis
 
 # Use tini to manage zombie processes and signal forwarding
 # https://github.com/krallin/tini
-ENTRYPOINT ["/usr/bin/tini", "--"]
+ENTRYPOINT ["/sbin/tini", "--"]
 
 # Pass the startup script as arguments to tini
 CMD ["/app/run.sh"]
