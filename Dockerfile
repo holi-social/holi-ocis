@@ -29,6 +29,9 @@ EXPOSE 9200
 WORKDIR /app
 COPY ./app /app
 
+# Create mount directory for service.
+RUN mkdir -p /mnt/nfs/filestore
+
 # Ensure the script is executable
 RUN chmod +x /app/run.sh
 

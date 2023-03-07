@@ -1,12 +1,12 @@
 resource "google_filestore_instance" "ocis_development" {
   name     = "ocis-development"
   location = "europe-north1-a" # finland, low CO2 emissions
-  tier = "BASIC_HDD" # standard tier
+  tier     = "BASIC_HDD"       # standard tier
   project  = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
 
   file_shares {
     capacity_gb = 1024 # minimum value for standard tier
-    name        = "ocis_metadata"
+    name        = "ocis_data"
     # TODO(SF) source_backup
   }
 
@@ -22,12 +22,12 @@ resource "google_filestore_instance" "ocis_development" {
 resource "google_filestore_instance" "ocis_production" {
   name     = "ocis-production"
   location = "europe-north1-a" # finland, low CO2 emissions
-  tier = "BASIC_HDD" # standard tier
+  tier     = "BASIC_HDD"       # standard tier
   project  = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
 
   file_shares {
     capacity_gb = 1024 # minimum value for standard tier
-    name        = "ocis_metadata"
+    name        = "ocis_data"
     # TODO(SF) source_backup
   }
 
