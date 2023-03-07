@@ -7,7 +7,7 @@ set -eo pipefail
 mkdir -p /mnt/nfs/filestore
 
 echo "Mounting Cloud Filestore."
-mount -o nolock $FILESTORE_IP_ADDRESS:/$FILESTORE_FILESHARE_NAME /mnt/nfs/filestore
+mount --verbose -o nolock $FILESTORE_IP_ADDRESS:/$FILESTORE_FILESHARE_NAME /mnt/nfs/filestore
 
 echo "Mounting completed."
 
