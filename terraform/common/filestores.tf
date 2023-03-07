@@ -8,11 +8,17 @@ resource "google_filestore_instance" "ocis_development" {
     capacity_gb = 1024 # minimum value for standard tier
     name        = "ocis_data"
     # TODO(SF) source_backup
+    
+    nfs_export_options {
+      ip_ranges = ["10.8.0.0/28"] # TODO (DB) replace with data.terraform_remote_state.holi_infra_state.outputs.vpc_access_connector_ip_cidr_range once published
+      access_mode = "READ_WRITE"
+      squash_mode = "NO_ROOT_SQUASH"
+   }
   }
 
   networks {
     # TODO(SF) ??
-    network = data.terraform_remote_state.holi_infra_state.outputs.vpc_access_connector_name
+    network = data.terraform_remote_state.holi_infra_state.outputs.vpc_access_connector_name # = "default"
     modes   = ["MODE_IPV4"]
     # TODO(SF) used by redis
     # connect_mode       = "PRIVATE_SERVICE_ACCESS"
@@ -29,11 +35,17 @@ resource "google_filestore_instance" "ocis_production" {
     capacity_gb = 1024 # minimum value for standard tier
     name        = "ocis_data"
     # TODO(SF) source_backup
+
+    nfs_export_options {
+      ip_ranges = ["10.8.0.0/28"] # TODO (DB) replace with data.terraform_remote_state.holi_infra_state.outputs.vpc_access_connector_ip_cidr_range once published
+      access_mode = "READ_WRITE"
+      squash_mode = "NO_ROOT_SQUASH"
+   }
   }
 
   networks {
     # TODO(SF) ??
-    network = data.terraform_remote_state.holi_infra_state.outputs.vpc_access_connector_name
+    network = data.terraform_remote_state.holi_infra_state.outputs.vpc_access_connector_name # = "default"
     modes   = ["MODE_IPV4"]
     # TODO(SF) used by redis
     # connect_mode       = "PRIVATE_SERVICE_ACCESS"
