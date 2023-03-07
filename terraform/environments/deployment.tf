@@ -53,7 +53,7 @@ resource "google_cloud_run_service" "owncloud_api" {
         }
         env {
           name  = "OCIS_OIDC_ISSUER"
-          value = local.environment_name == "production" ? "dev-auth.project-holi.org" : "auth.project-holi.org"
+          value = local.environment_name == "production" ? "auth.project-holi.org" : "dev-auth.project-holi.org"
 
         }
         # env {
