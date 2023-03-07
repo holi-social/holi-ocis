@@ -10,7 +10,7 @@ resource "google_filestore_instance" "ocis_development" {
     # TODO(SF) source_backup
     
     nfs_export_options {
-      ip_ranges = ["10.8.0.0/28"] # TODO (DB) replace with data.terraform_remote_state.holi_infra_state.outputs.vpc_access_connector_ip_cidr_range once published
+      ip_ranges = [data.terraform_remote_state.holi_infra_state.outputs.vpc_access_connector_ip_cidr_range]
       access_mode = "READ_WRITE"
       squash_mode = "NO_ROOT_SQUASH"
    }
@@ -37,7 +37,7 @@ resource "google_filestore_instance" "ocis_production" {
     # TODO(SF) source_backup
 
     nfs_export_options {
-      ip_ranges = ["10.8.0.0/28"] # TODO (DB) replace with data.terraform_remote_state.holi_infra_state.outputs.vpc_access_connector_ip_cidr_range once published
+      ip_ranges = [data.terraform_remote_state.holi_infra_state.outputs.vpc_access_connector_ip_cidr_range]
       access_mode = "READ_WRITE"
       squash_mode = "NO_ROOT_SQUASH"
    }
