@@ -18,7 +18,7 @@ resource "google_filestore_instance" "ocis_development" {
 
   networks {
     # TODO(SF) ??
-    network = data.terraform_remote_state.holi_infra_state.google_compute_network_default_name
+    network = data.terraform_remote_state.holi_infra_state.outputs.google_compute_network_default_name
     modes   = ["MODE_IPV4"]
     # TODO(SF) used by redis
     connect_mode = "PRIVATE_SERVICE_ACCESS"
@@ -46,7 +46,7 @@ resource "google_filestore_instance" "ocis_production" {
 
   networks {
     # TODO(SF) ??
-    network = data.terraform_remote_state.holi_infra_state.google_compute_network_default_name
+    network = data.terraform_remote_state.holi_infra_state.outputs.google_compute_network_default_name
     modes   = ["MODE_IPV4"]
     # TODO(SF) used by redis
     connect_mode = "PRIVATE_SERVICE_ACCESS"

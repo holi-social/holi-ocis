@@ -1,6 +1,8 @@
 ## these dns changes are done in the infra shared project (https://gitlab.com/holisticfoundation/holi-infra)
 ## because the zone apis.project-holi.org is managed in that project.
 
+# TODO (DB) (SF) eigene DNS zone ({staging|production|...}.cloud.project-holi.org ?)
+
 locals {
   # effectively, this is owncloud.apis.project-holi.org
   owncloud_api_environments_zone_dns_name = "owncloud.${data.terraform_remote_state.holi_infra_state.outputs.dns_apis_zone_domain}."

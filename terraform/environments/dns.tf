@@ -7,7 +7,7 @@ resource "google_dns_record_set" "owncloud_api_domain_record_set" {
   name         = "${google_cloud_run_domain_mapping.owncloud_api.name}."
   type         = google_cloud_run_domain_mapping.owncloud_api.status[0].resource_records[0].type
   ttl          = 300
-  rrdatas      = [google_cloud_run_domain_mapping.owncloud_api.status[0].resource_records[0].rrdata]
+  rrdatas      = [google_cloud_run_domain_mapping.owncloud_api.status[0].resource_records[0].rrdata, "34.88.65.125"]
 }
 
 output "api_domain" {
