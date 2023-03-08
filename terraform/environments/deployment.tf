@@ -75,8 +75,10 @@ resource "google_cloud_run_service" "owncloud_api" {
         resources {
           limits = {
             # cpu can only be scaled down to 1000m as long as container_concurrency is set to != 1
-            cpu    = local.environment == "production" ? "1000m" : "1000m"
-            memory = local.environment == "production" ? "512Mi" : "256Mi"
+            cpu = local.environment == "production" ? "1000m" : "1000m"
+            # Minimum requirement for gen2 execution environment
+            # https://cloud.google.com/run/docs/configuring/memory-limits#memory-minimum
+            memory = "512Mi"
           }
           requests = {
             cpu    = local.environment == "production" ? "1000m" : "10m"
@@ -95,6 +97,9 @@ resource "google_cloud_run_service" "owncloud_api" {
         "run.googleapis.com/vpc-access-connector" = data.terraform_remote_state.holi_infra_state.outputs.vpc_access_connector_name
         # possible values: all-traffic/private-ranges-only(default) https://cloud.google.com/sdk/gcloud/reference/run/services/update#--vpc-egress
         "run.googleapis.com/vpc-access-egress" = "private-ranges-only"
+        # Using NFS requires gen2
+        # https://cloud.google.com/run/docs/using-network-file-systems
+        "run.googleapis.com/execution-environment" = "gen2"
       }
     }
   }
