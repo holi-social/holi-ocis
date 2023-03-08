@@ -15,8 +15,25 @@ ENV OCIS_LOG_LEVEL="info"
 ENV OCIS_LOG_COLOR="false"
 ENV OCIS_INSECURE="${OCIS_INSECURE}"
 
-ENTRYPOINT ["/bin/sh", "-c", "ocis init || true; ocis server"]
+# Based on https://cloud.google.com/run/docs/tutorials/network-filesystems-filestore#defining_your_environment_configuration_with_the_dockerfile
+
+# Install system dependencies
+USER root
+
+RUN apk update && apk add --no-cache tini nfs-utils
 
 EXPOSE 9200
 
-CMD []
+# Copy local code to the container image.
+WORKDIR /app
+COPY ./app /app
+
+# Ensure the script is executable
+RUN chmod +x /app/run.sh
+
+# Use tini to manage zombie processes and signal forwarding
+# https://github.com/krallin/tini
+ENTRYPOINT ["/sbin/tini", "--"]
+
+# Pass the startup script as arguments to tini
+CMD ["/app/run.sh"]
