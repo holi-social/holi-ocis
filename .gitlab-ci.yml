@@ -1,12 +1,12 @@
-variables:
+.variables:
   API_BASE_URL_PATH: "$CI_PROJECT_DIR/api_domain"
 
-stages:
+.stages:
   - "build"
   - "deploy"
   - "destroy"
 
-default:
+.default:
   before_script:
     - set -eux
     - env
@@ -14,7 +14,7 @@ default:
   tags:
     - holi-small # build on smaller machine
 
-build_docker:
+.build_docker:
   image: docker:20.10
   stage: "build"
   services:
@@ -53,7 +53,7 @@ build_docker:
   resource_group: $ENVIRONMENT_ID # never execute terraform in parallel on the same environment
   interruptible: false
 
-review_deploy:
+.review_deploy:
   extends: .deploy
   environment:
     name: review/$CI_COMMIT_REF_SLUG
@@ -65,7 +65,7 @@ review_deploy:
     - production
     - /^noenv\/.*/
 
-review_destroy:
+.review_destroy:
   stage: destroy
   image:
     name: "hashicorp/terraform:1.1.9"
@@ -94,7 +94,7 @@ review_destroy:
   resource_group: $CI_ENVIRONMENT_SLUG # never execute terraform in parallel on the same environment
   interruptible: false
 
-staging_deploy:
+.staging_deploy:
   extends: .deploy
   environment:
     name: staging
@@ -105,7 +105,7 @@ staging_deploy:
   only:
     - main
 
-production_deploy:
+.production_deploy:
   extends: .deploy
   allow_failure: false
   environment:
