@@ -16,16 +16,28 @@ resource "google_dns_record_set" "cloud_zone_entry" {
   rrdatas = google_dns_managed_zone.cloud_zone.name_servers
 }
 
+locals {
+  cloud_dev_domain_name  = trim("dev.${google_dns_managed_zone.cloud_zone.dns_name}", ".")
+  cloud_prod_domain_name = trim("prod.${google_dns_managed_zone.cloud_zone.dns_name}", ".")
+}
+
 # subdomain dev.cloud.project-holi.org
 resource "google_dns_record_set" "cloud_development_entry" {
   project      = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
-  name         = "dev.${google_dns_managed_zone.cloud_zone.dns_name}"
+  name         = "${local.cloud_dev_domain_name}."
   type         = "A"
   ttl          = 300
   managed_zone = google_dns_managed_zone.cloud_zone.name
-  rrdatas      = ["34.88.65.125"] # TODO replace with future IP via terraform
+  rrdatas      = [local.cloud_development_ocis_ip]
 }
 
-output "cloud_dev_domain_name" {
-  value = google_dns_record_set.cloud_development_entry.name
+# subdomain prod.cloud.project-holi.org
+resource "google_dns_record_set" "cloud_production_entry" {
+  project      = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
+  name         = "${local.cloud_prod_domain_name}."
+  type         = "A"
+  ttl          = 300
+  managed_zone = google_dns_managed_zone.cloud_zone.name
+  rrdatas      = [local.cloud_production_ocis_ip]
 }
+
