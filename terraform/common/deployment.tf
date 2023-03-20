@@ -2,7 +2,7 @@ data "template_file" "init_script_prod" {
   template = file("${path.module}/scripts/init-ocis.sh")
   vars = {
     cert_email    = "daniel.bimschas@holi.team"
-    ocis_url      = local.cloud_prod_domain_name
+    ocis_url      = local.cloud_production_domain_name
     ory_url       = "https://auth.project-holi.org"
     ory_client_id = "4838872a-e1b0-4c59-9913-035db1fa808f"
   }
@@ -12,7 +12,7 @@ data "template_file" "init_script_dev" {
   template = file("${path.module}/scripts/init-ocis.sh")
   vars = {
     cert_email    = "daniel.bimschas@holi.team"
-    ocis_url      = local.cloud_dev_domain_name
+    ocis_url      = local.cloud_development_domain_name
     ory_url       = "https://dev-auth.project-holi.org"
     ory_client_id = "b1c892b2-3746-4fca-a3f7-b3bafcffd9ee"
   }

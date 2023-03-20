@@ -17,14 +17,14 @@ resource "google_dns_record_set" "cloud_zone_entry" {
 }
 
 locals {
-  cloud_dev_domain_name  = trim("dev.${google_dns_managed_zone.cloud_zone.dns_name}", ".")
-  cloud_prod_domain_name = trim("prod.${google_dns_managed_zone.cloud_zone.dns_name}", ".")
+  cloud_development_domain_name = trim("development.${google_dns_managed_zone.cloud_zone.dns_name}", ".")
+  cloud_production_domain_name  = trim("production.${google_dns_managed_zone.cloud_zone.dns_name}", ".")
 }
 
 # subdomain dev.cloud.project-holi.org
 resource "google_dns_record_set" "cloud_development_entry" {
   project      = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
-  name         = "${local.cloud_dev_domain_name}."
+  name         = "${local.cloud_development_domain_name}."
   type         = "A"
   ttl          = 300
   managed_zone = google_dns_managed_zone.cloud_zone.name
@@ -34,7 +34,7 @@ resource "google_dns_record_set" "cloud_development_entry" {
 # subdomain prod.cloud.project-holi.org
 resource "google_dns_record_set" "cloud_production_entry" {
   project      = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
-  name         = "${local.cloud_prod_domain_name}."
+  name         = "${local.cloud_production_domain_name}."
   type         = "A"
   ttl          = 300
   managed_zone = google_dns_managed_zone.cloud_zone.name
