@@ -1,29 +1,72 @@
+# Based on https://github.com/owncloud/ocis/blob/master/deployments/examples/ocis_keycloak/docker-compose.yml
+---
 version: "3.7"
 
 services:
+  traefik:
+    image: traefik:v2.9.1
+    networks:
+      ocis-net:
+        aliases:
+          - local.cloud.project-holi.org
+    command:
+      - "--entryPoints.http.address=:80"
+      - "--entryPoints.http.http.redirections.entryPoint.to=https"
+      - "--entryPoints.http.http.redirections.entryPoint.scheme=https"
+      - "--entryPoints.https.address=:443"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      - "--providers.docker.exposedByDefault=false"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    labels:
+      - "traefik.http.routers.traefik.entrypoints=https"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.cloud.project-holi.org`)"
+      - "traefik.http.routers.traefik.middlewares=traefik-auth"
+      - "traefik.http.routers.traefik.tls.certresolver=http"
+      - "traefik.http.routers.traefik.service=api@internal"
+    logging:
+      driver: "local"
+    restart: always
+
   ocis:
-    image: owncloud/ocis:latest
+    image: owncloud/ocis:${OCIS_DOCKER_TAG:-latest}
+    networks:
+      ocis-net:
     entrypoint:
       - /bin/sh
     command: ["-c", "ocis init || true; ocis server"]
     environment:
-      PROXY_AUTOPROVISION_ACCOUNTS: "true"
-      PROXY_OIDC_REWRITE_WELLKNOWN: "true"
-      OCIS_OIDC_ISSUER: https://${OCIS_OIDC_ISSUER}
-      WEB_OIDC_CLIENT_ID: ${OCIS_OIDC_CLIENT_ID}
-      OCIS_URL: https://${OCIS_DOMAIN}
-      OCIS_LOG_LEVEL: ${OCIS_LOG_LEVEL:-info}
-      OCIS_LOG_COLOR: "${OCIS_LOG_COLOR:-false}"
-      OCIS_INSECURE: "${OCIS_INSECURE}"
+      PROXY_AUTOPROVISION_ACCOUNTS: true
+      PROXY_OIDC_REWRITE_WELLKNOWN: true
+      PROXY_TLS: false
+      WEB_OIDC_CLIENT_ID: b1c892b2-3746-4fca-a3f7-b3bafcffd9ee
+      OCIS_OIDC_ISSUER: https://dev-auth.project-holi.org
+      OCIS_URL: https://local.cloud.project-holi.org
+      OCIS_LOG_LEVEL: debug
+      OCIS_LOG_COLOR: false
+      OCIS_INSECURE: true
     volumes:
       - ocis-config:/etc/ocis
       - ocis-data:/var/lib/ocis
     ports:
-      - 127.0.0.1:9200:9200
+      - 9200:9200
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ocis.entrypoints=https"
+      - "traefik.http.routers.ocis.rule=Host(`local.cloud.project-holi.org`)"
+      - "traefik.http.routers.ocis.tls.certresolver=http"
+      - "traefik.http.routers.ocis.service=ocis"
+      - "traefik.http.services.ocis.loadbalancer.server.port=9200"
     logging:
-      driver: ${OCIS_LOG_DRIVER:-local}
+      driver: local
     restart: always
 
 volumes:
   ocis-config:
   ocis-data:
+
+networks:
+  ocis-net:
