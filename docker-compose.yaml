@@ -39,15 +39,15 @@ services:
       - /bin/sh
     command: ["-c", "ocis init || true; ocis server"]
     environment:
-      PROXY_AUTOPROVISION_ACCOUNTS: true
-      PROXY_OIDC_REWRITE_WELLKNOWN: true
-      PROXY_TLS: false
+      PROXY_AUTOPROVISION_ACCOUNTS: "true"
+      PROXY_OIDC_REWRITE_WELLKNOWN: "true"
+      PROXY_TLS: "false"
       WEB_OIDC_CLIENT_ID: b1c892b2-3746-4fca-a3f7-b3bafcffd9ee
       OCIS_OIDC_ISSUER: https://dev-auth.project-holi.org
       OCIS_URL: https://local.cloud.project-holi.org
       OCIS_LOG_LEVEL: debug
-      OCIS_LOG_COLOR: false
-      OCIS_INSECURE: true
+      OCIS_LOG_COLOR: "false"
+      OCIS_INSECURE: "true"
     volumes:
       - ocis-config:/etc/ocis
       - ocis-data:/var/lib/ocis
