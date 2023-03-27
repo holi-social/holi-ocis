@@ -51,7 +51,7 @@ sudo chmod +x /usr/local/bin/ocis
 
 # Create initial OCIS config
 sudo mkdir -p /etc/ocis/config
-ocis init --insecure true --config-path /etc/ocis/config
+IDM_ADMIN_PASSWORD='${ocis_admin_password}' ocis init --insecure true --config-path /etc/ocis/config
 
 # Create user for running OCIS
 sudo useradd --system --no-create-home --shell=/sbin/nologin ocis
@@ -63,6 +63,7 @@ PROXY_HTTP_ADDR=127.0.0.1:9200
 PROXY_AUTOPROVISION_ACCOUNTS=true
 PROXY_OIDC_REWRITE_WELLKNOWN=true
 PROXY_TLS=false
+PROXY_ENABLE_BASIC_AUTH=true
 WEB_OIDC_CLIENT_ID=${ory_client_id}
 OCIS_OIDC_ISSUER=${ory_url}
 OCIS_URL=https://${ocis_url}
@@ -71,6 +72,7 @@ OCIS_BASE_DATA_PATH=/etc/ocis
 OCIS_INSECURE=true
 OCIS_LOG_LEVEL=error
 OCIS_LOG_COLOR=true
+IDM_ADMIN_PASSWORD=${ocis_admin_password}
 EOF
 
 # Create systemd service to run OCIS
