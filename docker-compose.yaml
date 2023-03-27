@@ -48,6 +48,8 @@ services:
       OCIS_LOG_LEVEL: debug
       OCIS_LOG_COLOR: "false"
       OCIS_INSECURE: "true"
+      IDM_ADMIN_PASSWORD: "password"
+      PROXY_ENABLE_BASIC_AUTH: "true"
     volumes:
       - ocis-config:/etc/ocis
       - ocis-data:/var/lib/ocis
