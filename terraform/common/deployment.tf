@@ -1,10 +1,10 @@
 
-data "google_secret_manager_secret_version_access" "ocis_admin_password_development" {
+data "google_secret_manager_secret" "ocis_admin_password_development" {
   project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
   secret  = "OCIS_ADMIN_PASSWORD_DEVELOPMENT"
 }
 
-data "google_secret_manager_secret_version_access" "ocis_admin_password_production" {
+data "google_secret_manager_secret" "ocis_admin_password_production" {
   project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
   secret  = "OCIS_ADMIN_PASSWORD_PRODUCTION"
 }
