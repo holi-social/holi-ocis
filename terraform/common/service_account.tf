@@ -5,9 +5,14 @@ resource "google_service_account" "owncloud_api" {
 }
 
 resource "google_project_iam_member" "owncloud_api" {
+  for_each = toset([
+    "roles/secretmanager.secretAccessor",
+    "roles/logging.logWriter",
+    "roles/monitoring.metricWriter",
+  ])
   project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
   member  = "serviceAccount:${google_service_account.owncloud_api.email}"
-  role    = "roles/secretmanager.secretAccessor"
+  role    = each.key
 }
 
 output "cloud_run_service_account_email" {
