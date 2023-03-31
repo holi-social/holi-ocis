@@ -95,7 +95,11 @@ resource "google_compute_instance" "production_ocis" {
 
   service_account {
     email  = local.cloud_service_account_email
-    scopes = ["compute-rw"]
+    scopes = [
+      "compute-rw",
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring.write",
+    ]
   }
 
   tags = ["http-server", "https-server"]

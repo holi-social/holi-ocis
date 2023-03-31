@@ -1,4 +1,16 @@
 #! /bin/bash
+
+# If ocis config folder already exists, we assume that this script has already
+# been run in the past so we don't execute again to not break things
+if [[ -d "/etc/ocis/" ]]
+then
+  exit 0
+fi
+
+# Install OpsAgent for collecting logs (and metrics)
+curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
+sudo bash add-google-cloud-ops-agent-repo.sh --also-install
+
 # Install necessary dependencies
 sudo apt update
 sudo apt install -y nginx snapd ldap-utils wget
@@ -51,17 +63,11 @@ sudo chmod +x /usr/local/bin/ocis
 
 # Create initial OCIS config
 sudo mkdir -p /etc/ocis/config
-# Make sure to remove a previous config
-sudo rm /etc/ocis/config/ocis.yaml
 IDM_ADMIN_PASSWORD='${ocis_admin_password}' ocis init --insecure true --config-path /etc/ocis/config
 
 # Create user for running OCIS
 sudo useradd --system --no-create-home --shell=/sbin/nologin ocis
 sudo chown -R ocis:ocis /etc/ocis
-
-# Install OpsAgent for collecting logs (and metrics)
-curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
-sudo bash add-google-cloud-ops-agent-repo.sh --also-install
 
 # Create environment
 sudo bash -c 'cat > /etc/ocis/ocis.env' <<'EOF'
