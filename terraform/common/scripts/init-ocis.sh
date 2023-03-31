@@ -57,6 +57,10 @@ ocis init --insecure true --config-path /etc/ocis/config
 sudo useradd --system --no-create-home --shell=/sbin/nologin ocis
 sudo chown -R ocis:ocis /etc/ocis
 
+# Install OpsAgent for collecting logs (and metrics)
+curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
+sudo bash add-google-cloud-ops-agent-repo.sh --also-install
+
 # Create environment
 sudo bash -c 'cat > /etc/ocis/ocis.env' <<EOF
 PROXY_HTTP_ADDR=127.0.0.1:9200

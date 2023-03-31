@@ -39,7 +39,11 @@ resource "google_compute_instance" "development_ocis" {
     }
   }
 
-  metadata_startup_script = data.template_file.init_script_dev.rendered
+  metadata {
+    # used instead of metadata_startup_script which forces the VM to be recreated upon changes of contents
+    # this startup-script is executed on every reboot
+    startup-script = data.template_file.init_script_dev.rendered
+  }
 
   service_account {
     email  = local.cloud_service_account_email
