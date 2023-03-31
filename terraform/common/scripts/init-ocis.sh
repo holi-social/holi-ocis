@@ -51,6 +51,8 @@ sudo chmod +x /usr/local/bin/ocis
 
 # Create initial OCIS config
 sudo mkdir -p /etc/ocis/config
+# Make sure to remove a previous config
+sudo rm /etc/ocis/config/ocis.yaml
 IDM_ADMIN_PASSWORD='${ocis_admin_password}' ocis init --insecure true --config-path /etc/ocis/config
 
 # Create user for running OCIS
