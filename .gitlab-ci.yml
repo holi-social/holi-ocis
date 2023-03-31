@@ -1,6 +1,3 @@
-variables:
-  API_BASE_URL_PATH: "$CI_PROJECT_DIR/api_domain"
-
 stages:
   - "deploy"
 
