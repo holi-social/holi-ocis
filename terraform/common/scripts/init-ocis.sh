@@ -64,7 +64,7 @@ curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
 sudo bash add-google-cloud-ops-agent-repo.sh --also-install
 
 # Create environment
-sudo bash -c 'cat > /etc/ocis/ocis.env' <<EOF
+sudo bash -c 'cat > /etc/ocis/ocis.env' <<'EOF'
 PROXY_HTTP_ADDR=127.0.0.1:9200
 PROXY_AUTOPROVISION_ACCOUNTS=true
 PROXY_OIDC_REWRITE_WELLKNOWN=true
