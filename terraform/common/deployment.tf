@@ -1,4 +1,3 @@
-
 data "google_secret_manager_secret_version_access" "ocis_admin_password_development" {
   project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
   secret  = "OCIS_ADMIN_PASSWORD_DEVELOPMENT"
@@ -9,6 +8,16 @@ data "google_secret_manager_secret_version_access" "ocis_admin_password_producti
   secret  = "OCIS_ADMIN_PASSWORD_PRODUCTION"
 }
 
+data "google_secret_manager_secret_version_access" "ory_client_id_development" {
+  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
+  secret  = "ORY_CLIENT_ID_DEVELOPMENT"
+}
+
+data "google_secret_manager_secret_version_access" "ory_client_id_production" {
+  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
+  secret  = "ORY_CLIENT_ID_PRODUCTION"
+}
+
 resource "google_storage_bucket" "development_ocis" {
   project       = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
   name          = "cloud-development-ocis"
@@ -16,7 +25,6 @@ resource "google_storage_bucket" "development_ocis" {
   storage_class = "REGIONAL"
 
   public_access_prevention    = "enforced"
-  force_destroy               = true
   uniform_bucket_level_access = true
 }
 
@@ -61,7 +69,7 @@ resource "google_compute_instance" "development_ocis" {
         cert_email            = "daniel.bimschas@holi.team"
         ocis_url              = local.cloud_development_domain_name
         ory_url               = "https://dev-auth.project-holi.org"
-        ory_client_id         = "b1c892b2-3746-4fca-a3f7-b3bafcffd9ee"
+        ory_client_id         = data.google_secret_manager_secret_version_access.ory_client_id_development.secret_data
         ocis_admin_password   = data.google_secret_manager_secret_version_access.ocis_admin_password_development.secret_data
         storage_access_id     = local.cloud_storage_access_key_development.access_id
         storage_access_secret = local.cloud_storage_access_key_development.secret
@@ -113,7 +121,7 @@ resource "google_compute_instance" "production_ocis" {
         cert_email            = "daniel.bimschas@holi.team"
         ocis_url              = local.cloud_production_domain_name
         ory_url               = "https://auth.project-holi.org"
-        ory_client_id         = "4838872a-e1b0-4c59-9913-035db1fa808f"
+        ory_client_id         = data.google_secret_manager_secret_version_access.ory_client_id_production.secret_data
         ocis_admin_password   = data.google_secret_manager_secret_version_access.ocis_admin_password_production.secret_data
         storage_access_id     = local.cloud_storage_access_key_production.access_id
         storage_access_secret = local.cloud_storage_access_key_production.secret

@@ -86,9 +86,9 @@ OCIS_LOG_LEVEL=error
 OCIS_LOG_COLOR=true
 IDM_ADMIN_PASSWORD=${ocis_admin_password}
 # activate s3ng storage driver for blobs
-STORAGE_USERS_DRIVER: s3ng
+STORAGE_USERS_DRIVER=s3ng
 # keep system data on ocis storage since this are only small files atm
-STORAGE_SYSTEM_DRIVER: ocis
+STORAGE_SYSTEM_DRIVER=ocis
 STORAGE_USERS_S3NG_ENDPOINT=https://storage.googleapis.com
 STORAGE_USERS_S3NG_ACCESS_KEY=${storage_access_id}
 STORAGE_USERS_S3NG_SECRET_KEY=${storage_access_secret}
