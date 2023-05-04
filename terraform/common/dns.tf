@@ -1,8 +1,8 @@
-# cloud zone (cloud.project-holi.org)
+# cloud zone (cloud.holi.social)
 resource "google_dns_managed_zone" "cloud_zone" {
   project  = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
   name     = "cloud-holi-social-zone"
-  dns_name = "cloud.${data.terraform_remote_state.holi_infra_state.outputs.dns_sld_zone_domain}." # cloud.project-holi.org.
+  dns_name = "cloud.${data.terraform_remote_state.holi_infra_state.outputs.dns_sld_zone_domain}." # cloud.holi.social.
 }
 
 resource "google_dns_record_set" "cloud_zone_entry" {
@@ -21,7 +21,7 @@ locals {
   cloud_production_domain_name  = trim("production.${google_dns_managed_zone.cloud_zone.dns_name}", ".")
 }
 
-# subdomain dev.cloud.project-holi.org
+# subdomain dev.cloud.holi.social
 resource "google_dns_record_set" "cloud_development_entry" {
   project      = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
   name         = "${local.cloud_development_domain_name}."
@@ -31,7 +31,7 @@ resource "google_dns_record_set" "cloud_development_entry" {
   rrdatas      = [local.cloud_development_ocis_ip]
 }
 
-# subdomain prod.cloud.project-holi.org
+# subdomain prod.cloud.holi.social
 resource "google_dns_record_set" "cloud_production_entry" {
   project      = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
   name         = "${local.cloud_production_domain_name}."

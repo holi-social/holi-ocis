@@ -35,7 +35,7 @@ staging_deploy:
   environment:
     name: staging
     deployment_tier: staging
-    url: https://development.cloud.project-holi.org
+    url: https://development.cloud.holi.social
   variables:
     ENVIRONMENT_ID: staging
   only:
@@ -47,7 +47,7 @@ staging_deploy:
   environment:
     name: production
     deployment_tier: production
-    url: https://production.cloud.project-holi.org
+    url: https://production.cloud.holi.social
   variables:
     ENVIRONMENT_ID: production
   only:

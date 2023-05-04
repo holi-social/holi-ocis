@@ -68,7 +68,7 @@ resource "google_compute_instance" "development_ocis" {
       {
         cert_email            = "daniel.bimschas@holi.team"
         ocis_url              = local.cloud_development_domain_name
-        ory_url               = "https://dev-auth.project-holi.org"
+        ory_url               = "https://dev-auth.holi.social"
         ory_client_id         = data.google_secret_manager_secret_version_access.ory_client_id_development.secret_data
         ocis_admin_password   = data.google_secret_manager_secret_version_access.ocis_admin_password_development.secret_data
         storage_access_id     = local.cloud_storage_access_key_development.access_id
@@ -120,7 +120,7 @@ resource "google_compute_instance" "production_ocis" {
       {
         cert_email            = "daniel.bimschas@holi.team"
         ocis_url              = local.cloud_production_domain_name
-        ory_url               = "https://auth.project-holi.org"
+        ory_url               = "https://auth.holi.social"
         ory_client_id         = data.google_secret_manager_secret_version_access.ory_client_id_production.secret_data
         ocis_admin_password   = data.google_secret_manager_secret_version_access.ocis_admin_password_production.secret_data
         storage_access_id     = local.cloud_storage_access_key_production.access_id
