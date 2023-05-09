@@ -38,6 +38,10 @@ resource "google_dns_record_set" "project_holi_cloud_production_entry" {
   type         = "A"
   ttl          = 300
   managed_zone = google_dns_managed_zone.project_holi_cloud_zone.name
-  rrdatas      = [local.cloud_production_ocis_ip]
+  # this IP is pointing to the nginx-proxy, so that we can do a permanent redirect there, fixing the
+  # cloud integration for old apps (1.0.14, 1.0.15) that are still using project-holi.org hardcoded.
+  # Starting with 1.0.16, the apps should go to the new domain anyways. Don't remove this until we're
+  # sure there is no old app versions installed.
+  rrdatas = ["35.228.129.14"]
 }
 
