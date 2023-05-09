@@ -41,14 +41,14 @@ resource "google_storage_bucket" "production_ocis" {
 resource "google_compute_instance" "development_ocis" {
   project                   = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
   name                      = "cloud-development-ocis"
-  machine_type              = "e2-micro"
+  machine_type              = "e2-standard-2"
   zone                      = "europe-north1-a"
   allow_stopping_for_update = true
 
   boot_disk {
     initialize_params {
       image = "debian-cloud/debian-11"
-      type  = "pd-ssd"
+      type  = "pd-balanced"
     }
   }
 
