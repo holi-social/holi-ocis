@@ -48,7 +48,7 @@ resource "google_compute_instance" "development_ocis" {
   boot_disk {
     initialize_params {
       image = "debian-cloud/debian-11"
-      type  = "pd-balanced"
+      type  = "pd-ssd"
     }
   }
 
