@@ -8,7 +8,9 @@ As Ory does not allow to redirect to localhost URLs, you have to add the followi
 
 ```sh
 127.0.0.1 local.cloud.holi.social
-127.0.0.1 traefik.cloud.holi.social
+127.0.0.1 local.traefik.holi.social
+127.0.0.1 local.wopiserver.holi.social
+127.0.0.1 local.onlyoffice.holi.social
 ```
 
 Then you can run
