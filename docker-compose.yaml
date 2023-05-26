@@ -55,8 +55,6 @@ services:
       IDM_ADMIN_PASSWORD: "password"
       PROXY_ENABLE_BASIC_AUTH: "true"
       GATEWAY_GRPC_ADDR: 0.0.0.0:9142
-      SEARCH_EXTRACTOR_TYPE: tika
-      SEARCH_EXTRACTOR_TIKA_TIKA_URL: http://tika:9998
     volumes:
       - ./config/ocis/app-registry.yaml:/etc/ocis/app-registry.yaml
       - ocis-config:/etc/ocis
@@ -156,12 +154,6 @@ services:
     restart: always
     ports:
       - 9201:80
-  tika:
-    image: apache/tika:latest-full
-    container_name: tika
-    networks:
-      ocis-net:
-    restart: always
 
 volumes:
   ocis-config:
