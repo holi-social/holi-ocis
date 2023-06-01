@@ -8,7 +8,8 @@ resource "google_project_iam_member" "cloud" {
   for_each = toset([
     "roles/logging.logWriter",
     "roles/monitoring.metricWriter",
-    "roles/storage.objectAdmin"
+    "roles/storage.objectAdmin",
+    "roles/cloudsql.client"
   ])
   project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
   member  = "serviceAccount:${google_service_account.cloud.email}"
