@@ -124,11 +124,11 @@ if [[ ! -d "/etc/wopiserver/" ]]; then
   sudo certbot certonly --nginx -n --agree-tos -m ${cert_email} -d ${wopiserver_url}
 
   # Create Nginx configuration file
-  sudo bash -c "cat > /etc/nginx/sites-available/${wopiserver_url} << EOF
+  sudo bash -c 'cat > /etc/nginx/sites-available/${wopiserver_url}' <<EOF
 server {
     listen 80;
     server_name ${wopiserver_url};
-    return 301 https://\\\$host\\\$request_uri;
+    return 301 https://\$host\$request_uri;
 }
 
 server {
@@ -140,13 +140,13 @@ server {
 
     location / {
         proxy_pass http://127.0.0.1:8880;
-        proxy_set_header Host \\\$http_host;
-        proxy_set_header X-Real-IP \\\$remote_addr;
-        proxy_set_header X-Forwarded-For \\\$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \\\$scheme;
+        proxy_set_header Host \$http_host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
 }
-EOF"
+EOF
 
   # Create a symbolic link to enable the site
   sudo ln -s /etc/nginx/sites-available/${wopiserver_url} /etc/nginx/sites-enabled/
@@ -177,8 +177,8 @@ EOF"
   sudo chmod a+rwx /var/wopi_local_storage
 
   # Create the files iopsecret and wopiscret in the folder /etc/wopi/
-  sudo sh -c "echo $iopsecret > /etc/wopi/iopsecret"
-  sudo sh -c "echo $wopisecret > /etc/wopi/wopisecret"
+  sudo sh -c "echo ${iopsecret} > /etc/wopi/iopsecret"
+  sudo sh -c "echo ${wopisecret} > /etc/wopi/wopisecret"
 
   # Navigate to the WOPI server folder
   cd /etc/wopiserver
@@ -196,7 +196,7 @@ EOF"
   sudo chmod 444 /etc/grid-security/host.crt
 
   # Create a config file /etc/wopi/wopiserver.conf
-  sudo bash -c "cat > /etc/wopi/wopiserver.conf << EOF
+  sudo bash -c 'cat > /etc/wopi/wopiserver.conf' <<EOF
 # This config is based on https://github.com/owncloud/ocis/blob/master/deployments/examples/ocis_wopi/config/wopiserver/wopiserver.conf.dist
 
 [general]
@@ -303,10 +303,10 @@ authtokenvalidity = 3600
 # SSL certificate check for Reva
 sslverify = True
 
-EOF"
+EOF
 
   # Create systemd service for WOPI Server
-  sudo bash -c "cat > /etc/systemd/system/wopiserver.service << EOF
+  sudo bash -c 'cat > /etc/systemd/system/wopiserver.service' <<EOF
 [Unit]
 Description=WOPI Server
 After=syslog.target
@@ -319,7 +319,7 @@ StandardError=syslog
 
 [Install]
 WantedBy=default.target
-EOF"
+EOF
 
   # Append WOPI environment variables to ocis.env
   {
@@ -328,11 +328,11 @@ EOF"
     echo "APP_PROVIDER_GRPC_ADDR=0.0.0.0:9164"
     echo "APP_PROVIDER_EXTERNAL_ADDR=0.0.0.0:9164"
     echo "APP_PROVIDER_DRIVER=wopi"
-    echo "APP_PROVIDER_WOPI_FOLDER_URL_BASE_URL=https://$ocis_url"
-    echo "APP_PROVIDER_WOPI_WOPI_SERVER_EXTERNAL_URL=https://$wopiserver_url"
+    echo "APP_PROVIDER_WOPI_FOLDER_URL_BASE_URL=https://${ocis_url}"
+    echo "APP_PROVIDER_WOPI_WOPI_SERVER_EXTERNAL_URL=https://${wopiserver_url}"
     echo "APP_PROVIDER_WOPI_INSECURE=false"
-    echo "APP_PROVIDER_WOPI_WOPI_SERVER_IOP_SECRET=$iopsecret"
-    echo "OCIS_JWT_SECRET=$ocis_jwt_secret"
+    echo "APP_PROVIDER_WOPI_WOPI_SERVER_IOP_SECRET=${iopsecret}"
+    echo "OCIS_JWT_SECRET=${ocis_jwt_secret}"
   } | sudo tee -a /etc/ocis/ocis.env
 
   # Enable and start the WOPI Server service
@@ -351,17 +351,17 @@ if [[ ! -d "/etc/onlyoffice/" ]]; then
 
   # Change the ONLYOFFICE default port
   onlyoffice_port=9201
-  echo "onlyoffice-documentserver onlyoffice/ds-port select $onlyoffice_port" | sudo debconf-set-selections
+  echo "onlyoffice-documentserver onlyoffice/ds-port select ${onlyoffice_port}" | sudo debconf-set-selections
 
   # Set PostgreSQL database options
-  echo "onlyoffice-documentserver onlyoffice/db-host string $onlyoffice_db_host" | sudo debconf-set-selections
-  echo "onlyoffice-documentserver onlyoffice/db-user string $onlyoffice_db_user" | sudo debconf-set-selections
-  echo "onlyoffice-documentserver onlyoffice/db-pwd password $onlyoffice_db_password" | sudo debconf-set-selections
-  echo "onlyoffice-documentserver onlyoffice/db-name string $onlyoffice_db_name" | sudo debconf-set-selections
+  echo "onlyoffice-documentserver onlyoffice/db-host string ${onlyoffice_db_host}" | sudo debconf-set-selections
+  echo "onlyoffice-documentserver onlyoffice/db-user string ${onlyoffice_db_user}" | sudo debconf-set-selections
+  echo "onlyoffice-documentserver onlyoffice/db-pwd password ${onlyoffice_db_password}" | sudo debconf-set-selections
+  echo "onlyoffice-documentserver onlyoffice/db-name string ${onlyoffice_db_name}" | sudo debconf-set-selections
 
   # Set JWT options
   echo "onlyoffice-documentserver onlyoffice/jwt-enabled boolean true" | sudo debconf-set-selections
-  echo "onlyoffice-documentserver onlyoffice/jwt-secret password $onlyoffice_jwt_secret" | sudo debconf-set-selections
+  echo "onlyoffice-documentserver onlyoffice/jwt-secret password ${onlyoffice_jwt_secret}" | sudo debconf-set-selections
 
   # Add GPG key
   mkdir -p -m 700 ~/.gnupg
@@ -387,7 +387,7 @@ if [[ ! -d "/etc/onlyoffice/" ]]; then
 
   # Switching ONLYOFFICE Docs to HTTPS using certbot
   onlyoffice_nginx_https_config_template="/etc/onlyoffice/documentserver/nginx/ds-ssl.conf.tmpl"
-  sudo sed -i "s/80/$onlyoffice_port/g" "$onlyoffice_nginx_https_config_template"
+  sudo sed -i "s/80/${onlyoffice_port}/g" "${onlyoffice_nginx_https_config_template}"
   sudo bash /usr/bin/documentserver-letsencrypt.sh ${cert_email} ${onlyoffice_url}
 
   # Restart Nginx
@@ -396,7 +396,7 @@ if [[ ! -d "/etc/onlyoffice/" ]]; then
   # Update local.json config to enable WOPI server
   onlyoffice_nginx_config_path="/etc/nginx/conf.d/ds.conf"
   onlyoffice_config_path="/etc/onlyoffice/documentserver/local.json"
-  onlyoffice_fs_secret=$(grep -m 1 -oP '(?<=set \$secure_link_secret ).*' "$onlyoffice_nginx_config_path" | rev | cut -c 2- | rev)
+  onlyoffice_fs_secret=$(grep -m 1 -oP '(?<=set \$secure_link_secret ).*' "{$onlyoffice_nginx_config_path}" | rev | cut -c 2- | rev)
 
   onlyoffice_config='{
   "wopi": {
@@ -404,18 +404,18 @@ if [[ ! -d "/etc/onlyoffice/" ]]; then
   },
   "storage": {
     "fs": {
-      "secretString": "'"$onlyoffice_fs_secret"'"
+      "secretString": "'"${onlyoffice_fs_secret}"'"
     }
   },
   "services": {
     "CoAuthoring": {
       "sql": {
         "type": "postgres",
-        "dbHost": "'"$onlyoffice_db_host"'",
+        "dbHost": "'"${onlyoffice_db_host}"'",
         "dbPort": "5432",
-        "dbName":  "'"$onlyoffice_db_name"'",
-        "dbUser":  "'"$onlyoffice_db_user"'",
-        "dbPass":  "'"$onlyoffice_db_password"'"
+        "dbName":  "'"${onlyoffice_db_name}"'",
+        "dbUser":  "'"${onlyoffice_db_user}"'",
+        "dbPass":  "'"${onlyoffice_db_password}"'"
       },
       "token": {
         "enable": {
@@ -434,31 +434,31 @@ if [[ ! -d "/etc/onlyoffice/" ]]; then
       },
       "secret": {
         "inbox": {
-          "string": "'"$onlyoffice_jwt_secret"'"
+          "string": "'"${onlyoffice_jwt_secret}"'"
         },
         "outbox": {
-          "string": "'"$onlyoffice_jwt_secret"'"
+          "string": "'"${onlyoffice_jwt_secret}"'"
         },
         "session": {
-          "string": "'"$onlyoffice_jwt_secret"'"
+          "string": "'"${onlyoffice_jwt_secret}"'"
         }
       }
     }
   }
 }'
 
-  sudo truncate -s 0 "$onlyoffice_config_path"
-  echo "$onlyoffice_config" | sudo tee "$onlyoffice_config_path" >/dev/null
+  sudo truncate -s 0 "${onlyoffice_config_path}"
+  echo "${onlyoffice_config}" | sudo tee "${onlyoffice_config_path}" >/dev/null
 
   # Append ONLYOFFICE environment variables to ocis.env
   {
     echo "APP_PROVIDER_WOPI_APP_NAME=OnlyOffice"
-    echo "APP_PROVIDER_WOPI_APP_URL=https://$onlyoffice_url"
-    echo "APP_PROVIDER_WOPI_APP_ICON_URI=https://$onlyoffice_url/web-apps/apps/documenteditor/main/resources/img/favicon.ico"
+    echo "APP_PROVIDER_WOPI_APP_URL=https://${onlyoffice_url}"
+    echo "APP_PROVIDER_WOPI_APP_ICON_URI=https://${onlyoffice_url}/web-apps/apps/documenteditor/main/resources/img/favicon.ico"
   } | sudo tee -a /etc/ocis/ocis.env
 
   # Create oCIS app-registry.yaml for ONLYOFFICE
-  sudo bash -c 'cat > /etc/ocis/config/app-registry.yaml <<EOF
+  sudo bash -c 'cat > /etc/ocis/config/app-registry.yaml' <<EOF
 # Supported mime types
 app_registry:
   mimetypes:
@@ -504,7 +504,7 @@ app_registry:
       icon: ""
       default_app: OnlyOffice
       allow_creation: true
-EOF'
+EOF
 
   # Restart ONLYOFFICE services
   sudo systemctl daemon-reload
