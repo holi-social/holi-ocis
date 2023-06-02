@@ -61,7 +61,7 @@ resource "google_storage_bucket" "production_ocis" {
 resource "google_compute_instance" "development_ocis" {
   project                   = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
   name                      = "cloud-development-ocis"
-  machine_type              = "e2-micro"
+  machine_type              = "e2-standard-2"
   zone                      = "europe-north1-a"
   allow_stopping_for_update = true
 
@@ -84,7 +84,7 @@ resource "google_compute_instance" "development_ocis" {
     # used instead of metadata_startup_script which forces the VM to be recreated upon changes of contents
     # this startup-script is executed on every reboot
     startup-script = templatefile(
-      "${path.module}/scripts/init-ocis-development.sh",
+      "${path.module}/scripts/init-ocis.sh",
       {
         cert_email             = "daniel.bimschas@holi.team"
         ocis_url               = local.cloud_development_domain_name
