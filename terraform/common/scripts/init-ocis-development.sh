@@ -214,11 +214,11 @@ loghandler = stream
 logdest = stdout
 
 # URL of your WOPI server or your HA proxy in front of it
-wopiurl = ${wopiserver_url}
+wopiurl = https://${wopiserver_url}
 
 # URL for direct download of files. The complete URL that is sent
 # to clients will include the access_token argument
-downloadurl = ${wopiserver_url}/wopi/cbox/download
+downloadurl = https://${wopiserver_url}/wopi/cbox/download
 
 # The internal server engine to use (defaults to flask).
 # Set to waitress for production installations.
@@ -404,7 +404,7 @@ if [[ ! -d "/etc/onlyoffice/" ]]; then
   },
   "storage": {
     "fs": {
-      "secretString": "$onlyoffice_fs_secret"
+      "secretString": "'"$onlyoffice_fs_secret"'"
     }
   },
   "services": {
