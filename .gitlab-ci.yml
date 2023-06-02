@@ -15,17 +15,11 @@ deploy:
     name: "hashicorp/terraform:1.3.7"
     # default entrypoint is terraform command, but we want to run shell scripts
     entrypoint: ["/bin/sh", "-c"]
-  variables:
-    ENVIRONMENT_ID: $CI_ENVIRONMENT_SLUG
-  artifacts:
-    paths:
-      - "terraform/scripts/crash.log" # optional, only available in case of a crash/panic
-      - "terraform/scripts/terraform-*.log" # separate log for every step/command
-    name: "${CI_JOB_NAME}_${CI_JOB_ID}"
-    #when: on_failure # can't do that for api base url, but can't define multiple artifacts
-    expire_in: 1 month
+
   script:
+    - cd terraform/common/
     - export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_CLOUD_SERVICE_ACCOUNT}
-    - terraform/environments/scripts/create-or-update-env.sh $ENVIRONMENT_ID $CI_COMMIT_SHA
-  resource_group: $ENVIRONMENT_ID # never execute terraform in parallel on the same environment
-  interruptible: false
+    - terraform init
+    - terraform apply -auto-approve
+  only:
+    - main
