@@ -351,7 +351,7 @@ if [[ ! -d "/etc/onlyoffice/" ]]; then
 
   # Change the ONLYOFFICE default port
   onlyoffice_port=9201
-  echo "onlyoffice-documentserver onlyoffice/ds-port select ${onlyoffice_port}" | sudo debconf-set-selections
+  echo "onlyoffice-documentserver onlyoffice/ds-port select $onlyoffice_port" | sudo debconf-set-selections
 
   # Set PostgreSQL database options
   echo "onlyoffice-documentserver onlyoffice/db-host string ${onlyoffice_db_host}" | sudo debconf-set-selections
@@ -387,7 +387,7 @@ if [[ ! -d "/etc/onlyoffice/" ]]; then
 
   # Switching ONLYOFFICE Docs to HTTPS using certbot
   onlyoffice_nginx_https_config_template="/etc/onlyoffice/documentserver/nginx/ds-ssl.conf.tmpl"
-  sudo sed -i "s/80/${onlyoffice_port}/g" "${onlyoffice_nginx_https_config_template}"
+  sudo sed -i "s/80/$onlyoffice_port/g" "$onlyoffice_nginx_https_config_template"
   sudo bash /usr/bin/documentserver-letsencrypt.sh ${cert_email} ${onlyoffice_url}
 
   # Restart Nginx
@@ -396,7 +396,7 @@ if [[ ! -d "/etc/onlyoffice/" ]]; then
   # Update local.json config to enable WOPI server
   onlyoffice_nginx_config_path="/etc/nginx/conf.d/ds.conf"
   onlyoffice_config_path="/etc/onlyoffice/documentserver/local.json"
-  onlyoffice_fs_secret=$(grep -m 1 -oP '(?<=set \$secure_link_secret ).*' "{$onlyoffice_nginx_config_path}" | rev | cut -c 2- | rev)
+  onlyoffice_fs_secret=$(grep -m 1 -oP '(?<=set \$secure_link_secret ).*' "$onlyoffice_nginx_config_path" | rev | cut -c 2- | rev)
 
   onlyoffice_config='{
   "wopi": {
@@ -404,7 +404,7 @@ if [[ ! -d "/etc/onlyoffice/" ]]; then
   },
   "storage": {
     "fs": {
-      "secretString": "'"${onlyoffice_fs_secret}"'"
+      "secretString": "'"$onlyoffice_fs_secret"'"
     }
   },
   "services": {
@@ -447,8 +447,8 @@ if [[ ! -d "/etc/onlyoffice/" ]]; then
   }
 }'
 
-  sudo truncate -s 0 "${onlyoffice_config_path}"
-  echo "${onlyoffice_config}" | sudo tee "${onlyoffice_config_path}" >/dev/null
+  sudo truncate -s 0 "$onlyoffice_config_path"
+  echo "$onlyoffice_config" | sudo tee "$onlyoffice_config_path" >/dev/null
 
   # Append ONLYOFFICE environment variables to ocis.env
   {
