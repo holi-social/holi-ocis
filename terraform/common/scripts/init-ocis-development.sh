@@ -404,18 +404,18 @@ if [[ ! -d "/etc/onlyoffice/" ]]; then
   },
   "storage": {
     "fs": {
-      "secretString": "'"$onlyoffice_fs_secret"'"
+      "secretString": "$onlyoffice_fs_secret"
     }
   },
   "services": {
     "CoAuthoring": {
       "sql": {
         "type": "postgres",
-        "dbHost": "'"${onlyoffice_db_host}"'",
+        "dbHost": "${onlyoffice_db_host}",
         "dbPort": "5432",
-        "dbName":  "'"${onlyoffice_db_name}"'",
-        "dbUser":  "'"${onlyoffice_db_user}"'",
-        "dbPass":  "'"${onlyoffice_db_password}"'"
+        "dbName":  "${onlyoffice_db_name}",
+        "dbUser":  "${onlyoffice_db_user}",
+        "dbPass":  "${onlyoffice_db_password}"
       },
       "token": {
         "enable": {
@@ -434,13 +434,13 @@ if [[ ! -d "/etc/onlyoffice/" ]]; then
       },
       "secret": {
         "inbox": {
-          "string": "'"${onlyoffice_jwt_secret}"'"
+          "string": "${onlyoffice_jwt_secret}"
         },
         "outbox": {
-          "string": "'"${onlyoffice_jwt_secret}"'"
+          "string": "${onlyoffice_jwt_secret}"
         },
         "session": {
-          "string": "'"${onlyoffice_jwt_secret}"'"
+          "string": "${onlyoffice_jwt_secret}"
         }
       }
     }
