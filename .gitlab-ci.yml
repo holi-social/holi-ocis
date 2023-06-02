@@ -9,7 +9,7 @@ default:
   tags:
     - holi-small # build on smaller machine
 
-.deploy:
+deploy:
   stage: "deploy"
   image:
     name: "hashicorp/terraform:1.3.7"
@@ -29,26 +29,3 @@ default:
     - terraform/environments/scripts/create-or-update-env.sh $ENVIRONMENT_ID $CI_COMMIT_SHA
   resource_group: $ENVIRONMENT_ID # never execute terraform in parallel on the same environment
   interruptible: false
-
-staging_deploy:
-  extends: .deploy
-  environment:
-    name: staging
-    deployment_tier: staging
-    url: https://development.cloud.holi.social
-  variables:
-    ENVIRONMENT_ID: staging
-  only:
-    - main
-
-.production_deploy:
-  extends: .deploy
-  allow_failure: false
-  environment:
-    name: production
-    deployment_tier: production
-    url: https://production.cloud.holi.social
-  variables:
-    ENVIRONMENT_ID: production
-  only:
-    - production
