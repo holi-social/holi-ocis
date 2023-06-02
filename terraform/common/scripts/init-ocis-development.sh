@@ -394,18 +394,11 @@ if [[ ! -d "/etc/onlyoffice/" ]]; then
   sudo service nginx restart
 
   # Update local.json config to enable WOPI server
-  onlyoffice_nginx_config_path="/etc/nginx/conf.d/ds.conf"
   onlyoffice_config_path="/etc/onlyoffice/documentserver/local.json"
-  onlyoffice_fs_secret=$(grep -m 1 -oP '(?<=set \$secure_link_secret ).*' "$onlyoffice_nginx_config_path" | rev | cut -c 2- | rev)
 
   onlyoffice_config='{
   "wopi": {
     "enable": true
-  },
-  "storage": {
-    "fs": {
-      "secretString": "'"$onlyoffice_fs_secret"'"
-    }
   },
   "services": {
     "CoAuthoring": {
@@ -449,6 +442,7 @@ if [[ ! -d "/etc/onlyoffice/" ]]; then
 
   sudo truncate -s 0 "$onlyoffice_config_path"
   echo "$onlyoffice_config" | sudo tee "$onlyoffice_config_path" >/dev/null
+  sudo bash /usr/bin/documentserver-update-securelink.sh
 
   # Append ONLYOFFICE environment variables to ocis.env
   {
