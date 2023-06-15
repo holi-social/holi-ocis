@@ -38,6 +38,25 @@ data "google_secret_manager_secret_version_access" "onlyoffice_jwt_secret_develo
   secret  = "ONLYOFFICE_JWT_SECRET_DEVELOPMENT"
 }
 
+data "google_secret_manager_secret_version_access" "ocis_jwt_secret_production" {
+  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
+  secret  = "OCIS_JWT_SECRET_PRODUCTION"
+}
+
+data "google_secret_manager_secret_version_access" "wopisecret_production" {
+  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
+  secret  = "OCIS_WOPISECRET_PRODUCTION"
+}
+
+data "google_secret_manager_secret_version_access" "iopsecret_production" {
+  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
+  secret  = "OCIS_IOPSECRET_PRODUCTION"
+}
+
+data "google_secret_manager_secret_version_access" "onlyoffice_jwt_secret_production" {
+  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
+  secret  = "ONLYOFFICE_JWT_SECRET_PRODUCTION"
+}
 resource "google_storage_bucket" "development_ocis" {
   project       = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
   name          = "cloud-development-ocis"
@@ -84,7 +103,7 @@ resource "google_compute_instance" "development_ocis" {
     # used instead of metadata_startup_script which forces the VM to be recreated upon changes of contents
     # this startup-script is executed on every reboot
     startup-script = templatefile(
-      "${path.module}/scripts/init-ocis-development.sh",
+      "${path.module}/scripts/init-ocis.sh",
       {
         cert_email             = "daniel.bimschas@holi.team"
         ocis_url               = local.cloud_development_domain_name
@@ -122,10 +141,11 @@ resource "google_compute_instance" "development_ocis" {
 }
 
 resource "google_compute_instance" "production_ocis" {
-  project      = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
-  name         = "cloud-production-ocis"
-  machine_type = "e2-micro"
-  zone         = "europe-north1-a"
+  project                   = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
+  name                      = "cloud-production-ocis"
+  machine_type              = "e2-standard-2"
+  zone                      = "europe-north1-a"
+  allow_stopping_for_update = true
 
   boot_disk {
     initialize_params {
@@ -148,14 +168,24 @@ resource "google_compute_instance" "production_ocis" {
     startup-script = templatefile(
       "${path.module}/scripts/init-ocis.sh",
       {
-        cert_email            = "daniel.bimschas@holi.team"
-        ocis_url              = local.cloud_production_domain_name
-        ory_url               = "https://auth.holi.social"
-        ory_client_id         = data.google_secret_manager_secret_version_access.ory_client_id_production.secret_data
-        ocis_admin_password   = data.google_secret_manager_secret_version_access.ocis_admin_password_production.secret_data
-        storage_access_id     = local.cloud_storage_access_key_production.access_id
-        storage_access_secret = local.cloud_storage_access_key_production.secret
-        storage_bucket        = local.storage_production_bucket
+        cert_email             = "daniel.bimschas@holi.team"
+        ocis_url               = local.cloud_production_domain_name
+        ory_url                = "https://auth.holi.social"
+        ory_client_id          = data.google_secret_manager_secret_version_access.ory_client_id_production.secret_data
+        ocis_admin_password    = data.google_secret_manager_secret_version_access.ocis_admin_password_production.secret_data
+        storage_access_id      = local.cloud_storage_access_key_production.access_id
+        storage_access_secret  = local.cloud_storage_access_key_production.secret
+        storage_bucket         = local.storage_production_bucket
+        ocis_jwt_secret        = data.google_secret_manager_secret_version_access.ocis_jwt_secret_production.secret_data
+        wopiserver_url         = local.cloud_production_wopiserver_domain_name
+        iopsecret              = data.google_secret_manager_secret_version_access.iopsecret_production.secret_data
+        wopisecret             = data.google_secret_manager_secret_version_access.wopisecret_production.secret_data
+        onlyoffice_url         = local.cloud_production_onlyoffice_domain_name
+        onlyoffice_db_host     = data.terraform_remote_state.holi_infra_state.outputs.database_ip_address_production
+        onlyoffice_db_name     = google_sql_database.onlyoffice_db_production.name
+        onlyoffice_db_user     = google_sql_user.onlyoffice_db_user_production.name
+        onlyoffice_db_password = google_sql_user.onlyoffice_db_user_production.password
+        onlyoffice_jwt_secret  = data.google_secret_manager_secret_version_access.onlyoffice_jwt_secret_production.secret_data
       }
     )
   }
