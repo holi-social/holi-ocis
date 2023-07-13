@@ -25,8 +25,9 @@ logdest = stdout
 wopiurl = https://local.wopiserver.holi.social
 
 # URL for direct download of files. The complete URL that is sent
-# to clients will include the access_token argument
-downloadurl = https://local.wopiserver.holi.social/wopi/cbox/download
+# to clients will include the access_token argument,
+# though WOPI apps also work without this route configured.
+# downloadurl = https://local.wopiserver.holi.social/wopi/cbox/download
 
 # The internal server engine to use (defaults to flask).
 # Set to waitress for production installations.
