@@ -217,8 +217,9 @@ logdest = stdout
 wopiurl = https://${wopiserver_url}
 
 # URL for direct download of files. The complete URL that is sent
-# to clients will include the access_token argument
-downloadurl = https://${wopiserver_url}/wopi/cbox/download
+# to clients will include the access_token argument,
+# though WOPI apps also work without this route configured.
+# downloadurl = https://${wopiserver_url}/wopi/cbox/download
 
 # The internal server engine to use (defaults to flask).
 # Set to waitress for production installations.
@@ -315,7 +316,7 @@ After=syslog.target
 Type=simple
 WorkingDirectory=/etc/wopiserver
 ExecStart=/usr/bin/python3 /etc/wopiserver/src/wopiserver.py
-StandardError=syslog
+StandardError=journal
 
 [Install]
 WantedBy=default.target
