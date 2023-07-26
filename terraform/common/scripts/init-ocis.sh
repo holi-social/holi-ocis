@@ -54,7 +54,7 @@ EOF
   sudo systemctl reload nginx
 
   # Install OwnCloud (OCIS)
-  sudo wget -O /usr/local/bin/ocis https://download.owncloud.com/ocis/ocis/stable/2.0.0/ocis-2.0.0-linux-amd64
+  sudo wget -O /usr/local/bin/ocis https://download.owncloud.com/ocis/ocis/stable/3.0.0/ocis-3.0.0-linux-amd64
   sudo chmod +x /usr/local/bin/ocis
 
   # Create initial OCIS config
@@ -89,6 +89,8 @@ STORAGE_USERS_S3NG_ENDPOINT=https://storage.googleapis.com
 STORAGE_USERS_S3NG_ACCESS_KEY=${storage_access_id}
 STORAGE_USERS_S3NG_SECRET_KEY=${storage_access_secret}
 STORAGE_USERS_S3NG_BUCKET=${storage_bucket}
+OCIS_LDAP_USER_ENABLED_ATTRIBUTE=""
+OCIS_LDAP_DISABLE_USER_MECHANISM=none
 EOF
 
   # Create systemd service to run OCIS

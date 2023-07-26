@@ -35,7 +35,7 @@ services:
     restart: always
 
   ocis:
-    image: owncloud/ocis:2.0.0
+    image: owncloud/ocis:3.0.0
     container_name: ocis
     networks:
       ocis-net:
@@ -73,7 +73,7 @@ services:
     restart: always
 
   ocis-appprovider-onlyoffice:
-    image: owncloud/ocis:2.0.0
+    image: owncloud/ocis:3.0.0
     container_name: ocis-appprovider-onlyoffice
     networks:
       ocis-net:
