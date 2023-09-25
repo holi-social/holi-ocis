@@ -510,3 +510,11 @@ EOF
   # Restart ownCloud
   sudo systemctl restart ocis
 fi
+
+# Configure cronjob to automatically renew certificates
+croncmd='certbot -q renew --post-hook "systemctl restart nginx"'
+cronjob="0 1 * * * $croncmd"
+(
+  sudo crontab -l | grep -v -F "$croncmd"
+  echo "$cronjob"
+) | sudo crontab -
