@@ -2,6 +2,12 @@
 
 # Install ownCloud Infinite Scale
 if [[ ! -d "/etc/ocis/" ]]; then
+  sudo bash -c 'cat > /etc/systemd/journald.conf' << 'EOF'
+[Journal]
+MaxRetentionSec=1month
+EOF
+  sudo systemctl restart systemd-journald
+
   # Install OpsAgent for collecting logs (and metrics)
   curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
   sudo bash add-google-cloud-ops-agent-repo.sh --also-install
@@ -26,6 +32,8 @@ logging:
       type: files
       include_paths: [/var/log/letsencrypt/*.log]
       record_log_file_path: true
+    systemd-journald:
+      type: systemd_journald
   service:
     pipelines:
       custom:
@@ -34,6 +42,7 @@ logging:
           - nginx-error
           - unattended-upgrades
           - letsencrypt
+          - systemd-journald
 metrics:
   receivers:
     hostmetrics:
