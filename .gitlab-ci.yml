@@ -23,3 +23,4 @@ deploy:
     - terraform apply -auto-approve
   only:
     - main
+
