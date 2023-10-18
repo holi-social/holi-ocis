@@ -6,6 +6,80 @@ if [[ ! -d "/etc/ocis/" ]]; then
   curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
   sudo bash add-google-cloud-ops-agent-repo.sh --also-install
 
+  # custom logging and monitoring config
+  sudo bash -c 'cat > /etc/google-cloud-ops-agent/config.yaml' << 'EOF'
+logging:
+  receivers:
+    nginx-access:
+      type: files
+      include_paths: [/var/log/nginx/*access.log, /var/log/openoffice/documentserver/*access.log]
+      record_log_file_path: true
+    nginx-error:
+      type: files
+      include_paths: [/var/log/nginx/*error.log, /var/log/openoffice/documentserver/*error.log]
+      record_log_file_path: true
+    unattended-upgrades:
+      type: files
+      include_paths: [/var/log/unattended-upgrades/*.log]
+      record_log_file_path: true
+    letsencrypt:
+      type: files
+      include_paths: [/var/log/letsencrypt/*.log]
+      record_log_file_path: true
+  service:
+    pipelines:
+      custom:
+        receivers:
+          - nginx-access
+          - nginx-error
+          - unattended-upgrades
+          - letsencrypt
+metrics:
+  receivers:
+    hostmetrics:
+      type: hostmetrics
+      collection_interval: 10s
+    nginx:
+      type: nginx
+      stub_status_url: http://127.0.0.1:80/nginx_status
+  service:
+    pipelines:
+      nginx:
+        receivers:
+          - nginx
+global:
+  default_self_log_file_rotation:
+    enabled: true
+    max_file_size_megabytes: 1
+    backup_count: 1
+EOF
+  # 
+  sudo systemctl restart google-cloud-ops-agent.service
+  # install logrotation
+  sudo apt install logrotate
+  # make sure that nginx logs which contain PII (IP addresses) get deleted after 2 days
+  sudo bash -c 'cat > /etc/logrotate.d/nginx' << 'EOF'
+/var/log/nginx/*.log {
+  daily
+  missingok
+  rotate 2
+  compress
+  delaycompress
+  notifempty
+  create 0640 www-data adm
+  sharedscripts
+  prerotate
+    if [ -d /etc/logrotate.d/httpd-prerotate ]; then \
+      run-parts /etc/logrotate.d/httpd-prerotate; \
+    fi \
+  endscript
+  postrotate
+    invoke-rc.d nginx rotate >/dev/null 2>&1
+  endscript
+}
+EOF
+  sudo systemctl restart logrotate
+  
   # Install necessary dependencies
   sudo apt update
   sudo apt install -y nginx snapd ldap-utils wget
@@ -51,6 +125,22 @@ server {
 }
 EOF
   sudo ln -s /etc/nginx/sites-available/${ocis_url} /etc/nginx/sites-enabled/${ocis_url}
+  # set up stub_status for nginx monitoring via Ops Agent
+  sudo bash -c 'cat > /etc/nginx/conf.d/status.conf' << 'EOF'
+server {
+  listen 80;
+  server_name 127.0.0.1;
+  location /nginx_status {
+    stub_status on;
+    access_log off;
+    allow 127.0.0.1;
+    deny all;
+  }
+  location / {
+   root /dev/null;
+  }
+}
+EOF
   sudo systemctl reload nginx
 
   # Install OwnCloud (OCIS)
@@ -510,3 +600,5 @@ EOF
   # Restart ownCloud
   sudo systemctl restart ocis
 fi
+
+
