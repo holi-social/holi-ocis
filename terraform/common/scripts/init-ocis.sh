@@ -18,11 +18,11 @@ logging:
   receivers:
     nginx-access:
       type: files
-      include_paths: [/var/log/nginx/*access.log, /var/log/openoffice/documentserver/*access.log]
+      include_paths: [/var/log/nginx/*access.log, /var/log/onlyoffice/documentserver/*access.log]
       record_log_file_path: true
     nginx-error:
       type: files
-      include_paths: [/var/log/nginx/*error.log, /var/log/openoffice/documentserver/*error.log]
+      include_paths: [/var/log/nginx/*error.log, /var/log/onlyoffice/documentserver/*error.log]
       record_log_file_path: true
     unattended-upgrades:
       type: files
