@@ -60,11 +60,12 @@ metrics:
         # The following are the metrics to be excluded. Comment out the required metrics.
         - agent.googleapis.com/agent/*
         #- agent.googleapis.com/cpu/*
-        # keep only percentage_used for disk
+        # keep only percentage_used and io_time for disk
+        #- agent.googleapis.com/disk/percentage_used
+        #- agent.googleapis.com/disk/io_time
         - agent.googleapis.com/disk/read_bytes_count
         - agent.googleapis.com/disk/write_bytes_count
         - agent.googleapis.com/disk/bytes_used
-        - agent.googleapis.com/disk/io_time
         - agent.googleapis.com/disk/weighted_io_time
         - agent.googleapis.com/disk/merged_operations
         - agent.googleapis.com/disk/operation_time
