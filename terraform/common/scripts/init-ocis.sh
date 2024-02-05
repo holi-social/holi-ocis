@@ -47,12 +47,41 @@ metrics:
   receivers:
     hostmetrics:
       type: hostmetrics
-      collection_interval: 10s
+      # Inspired by https://blog.emn178.cc/en/post/gcp-cloud-monitoring-reduce-data-and-cost/
+      collection_interval: 60s
     nginx:
       type: nginx
       stub_status_url: http://127.0.0.1:80/nginx_status
+  processors:
+    metrics_filter:
+      type: exclude_metrics
+      metrics_pattern:
+        # Inspired by https://blog.emn178.cc/en/post/gcp-cloud-monitoring-reduce-data-and-cost/
+        # The following are the metrics to be excluded. Comment out the required metrics.
+        - agent.googleapis.com/agent/*
+        #- agent.googleapis.com/cpu/*
+        # keep only percentage_used for disk
+        - agent.googleapis.com/disk/read_bytes_count
+        - agent.googleapis.com/disk/write_bytes_count
+        - agent.googleapis.com/disk/bytes_used
+        - agent.googleapis.com/disk/io_time
+        - agent.googleapis.com/disk/weighted_io_time
+        - agent.googleapis.com/disk/merged_operations
+        - agent.googleapis.com/disk/operation_time
+        - agent.googleapis.com/disk/operation_count
+        - agent.googleapis.com/disk/pending_operations
+        #- agent.googleapis.com/interface/*
+        #- agent.googleapis.com/memory/*
+        #- agent.googleapis.com/network/*
+        - agent.googleapis.com/processes/*
+        #- agent.googleapis.com/swap/*
   service:
     pipelines:
+      default_pipeline:
+        receivers:
+          - hostmetrics
+        processors:
+          - metrics_filter
       nginx:
         receivers:
           - nginx
