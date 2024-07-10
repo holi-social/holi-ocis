@@ -8,6 +8,20 @@ MaxRetentionSec=1month
 EOF
   sudo systemctl restart systemd-journald
 
+# unattended upgrades, python3-gi for using shutdown signal instead of polling
+apt install -y unattended-upgrades python3-gi
+echo unattended-upgrades unattended-upgrades/enable_auto_updates boolean true | debconf-set-selections
+dpkg-reconfigure -f noninteractive unattended-upgrades
+cat << 'EOF' > /etc/apt/apt.conf.d/99unattended-upgrades
+Unattended-Upgrade::Origins-Pattern {
+        "origin=Debian,codename=$${distro_codename}";
+        "origin=google-compute-engine-$${distro_codename}-stable";
+        "origin=cloud-sdk-$${distro_codename}";
+        "origin=google-cloud-ops-agent-$${distro_codename}";
+};
+Unattended-Upgrade::Automatic-Reboot "false";
+EOF
+
   # Install OpsAgent for collecting logs (and metrics)
   curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
   sudo bash add-google-cloud-ops-agent-repo.sh --also-install

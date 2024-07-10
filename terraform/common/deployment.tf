@@ -57,6 +57,32 @@ data "google_secret_manager_secret_version_access" "onlyoffice_jwt_secret_produc
   project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
   secret  = "ONLYOFFICE_JWT_SECRET_PRODUCTION"
 }
+
+# START encrypted storage buckets
+data "google_storage_project_service_account" "gcs_account" {
+  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
+}
+
+# dev
+
+resource "google_kms_crypto_key" "ocis_development_bucket_key" {
+  name            = "ocis-development-bucket-key"
+  key_ring        = data.terraform_remote_state.holi_infra_state.outputs.kms_shared_key_ring_id
+  rotation_period = "100000s"
+
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+resource "google_kms_crypto_key_iam_binding" "ocis_development_bucket_key_binding" {
+  crypto_key_id = google_kms_crypto_key.ocis_development_bucket_key.id
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+  members = [
+    "serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}",
+  ]
+}
+
 resource "google_storage_bucket" "development_ocis" {
   project       = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
   name          = "cloud-development-ocis"
@@ -65,6 +91,32 @@ resource "google_storage_bucket" "development_ocis" {
 
   public_access_prevention    = "enforced"
   uniform_bucket_level_access = true
+
+  encryption {
+    default_kms_key_name = google_kms_crypto_key.ocis_development_bucket_key.id
+  }
+
+  depends_on = [google_kms_crypto_key_iam_binding.ocis_development_bucket_key_binding]
+}
+
+# production
+
+resource "google_kms_crypto_key" "ocis_production_bucket_key" {
+  name            = "ocis-production-bucket-key"
+  key_ring        = data.terraform_remote_state.holi_infra_state.outputs.kms_shared_key_ring_id
+  rotation_period = "100000s"
+
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+resource "google_kms_crypto_key_iam_binding" "ocis_production_bucket_key_binding" {
+  crypto_key_id = google_kms_crypto_key.ocis_production_bucket_key.id
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+  members = [
+    "serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}",
+  ]
 }
 
 resource "google_storage_bucket" "production_ocis" {
@@ -75,7 +127,15 @@ resource "google_storage_bucket" "production_ocis" {
 
   public_access_prevention    = "enforced"
   uniform_bucket_level_access = true
+
+  encryption {
+    default_kms_key_name = google_kms_crypto_key.ocis_development_bucket_key.id
+  }
+
+  depends_on = [google_kms_crypto_key_iam_binding.ocis_production_bucket_key_binding]
 }
+# END encrypted storage buckets
+
 
 resource "google_compute_instance" "development_ocis" {
   project                   = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
