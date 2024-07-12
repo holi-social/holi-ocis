@@ -71,7 +71,7 @@ resource "google_kms_crypto_key" "ocis_development_bucket_key" {
   rotation_period = "100000s"
 
   lifecycle {
-    prevent_destroy = false
+    prevent_destroy = true
   }
 }
 
@@ -86,7 +86,7 @@ resource "google_kms_crypto_key_iam_binding" "ocis_development_bucket_key_bindin
 resource "google_storage_bucket" "development_ocis" {
   project       = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
   name          = "cloud-development-ocis"
-  location      = "EUROPE-NORTH1"
+  location      = local.default_region
   storage_class = "REGIONAL"
 
   public_access_prevention    = "enforced"
@@ -107,7 +107,7 @@ resource "google_kms_crypto_key" "ocis_production_bucket_key" {
   rotation_period = "100000s"
 
   lifecycle {
-    prevent_destroy = false
+    prevent_destroy = true
   }
 }
 
@@ -122,7 +122,7 @@ resource "google_kms_crypto_key_iam_binding" "ocis_production_bucket_key_binding
 resource "google_storage_bucket" "production_ocis" {
   project       = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
   name          = "cloud-production-ocis"
-  location      = "EUROPE-NORTH1"
+  location      = local.default_region
   storage_class = "REGIONAL"
 
   public_access_prevention    = "enforced"
@@ -141,7 +141,7 @@ resource "google_compute_instance" "development_ocis" {
   project                   = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
   name                      = "cloud-development-ocis"
   machine_type              = "e2-standard-2"
-  zone                      = "europe-north1-a"
+  zone                      = "${local.default_region}-a"
   allow_stopping_for_update = true
 
   boot_disk {
@@ -204,7 +204,7 @@ resource "google_compute_instance" "production_ocis" {
   project                   = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
   name                      = "cloud-production-ocis"
   machine_type              = "e2-standard-2"
-  zone                      = "europe-north1-a"
+  zone                      = "${local.default_region}-a"
   allow_stopping_for_update = true
 
   boot_disk {
