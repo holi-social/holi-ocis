@@ -66,9 +66,8 @@ data "google_storage_project_service_account" "gcs_account" {
 # dev
 
 resource "google_kms_crypto_key" "ocis_development_bucket_key" {
-  name            = "ocis-development-bucket-key"
-  key_ring        = data.terraform_remote_state.holi_infra_state.outputs.kms_shared_key_ring_id
-  rotation_period = "100000s"
+  name     = "ocis-development-bucket-key"
+  key_ring = data.terraform_remote_state.holi_infra_state.outputs.kms_shared_key_ring_id
 
   lifecycle {
     prevent_destroy = true
@@ -102,9 +101,8 @@ resource "google_storage_bucket" "development_ocis" {
 # production
 
 resource "google_kms_crypto_key" "ocis_production_bucket_key" {
-  name            = "ocis-production-bucket-key"
-  key_ring        = data.terraform_remote_state.holi_infra_state.outputs.kms_shared_key_ring_id
-  rotation_period = "100000s"
+  name     = "ocis-production-bucket-key"
+  key_ring = data.terraform_remote_state.holi_infra_state.outputs.kms_shared_key_ring_id
 
   lifecycle {
     prevent_destroy = true
