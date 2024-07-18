@@ -1,66 +1,53 @@
 data "google_secret_manager_secret_version_access" "ocis_admin_password_development" {
-  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
-  secret  = "OCIS_ADMIN_PASSWORD_DEVELOPMENT"
+  secret = "OCIS_ADMIN_PASSWORD_DEVELOPMENT"
 }
 
 data "google_secret_manager_secret_version_access" "ocis_admin_password_production" {
-  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
-  secret  = "OCIS_ADMIN_PASSWORD_PRODUCTION"
+  secret = "OCIS_ADMIN_PASSWORD_PRODUCTION"
 }
 
 data "google_secret_manager_secret_version_access" "ory_client_id_development" {
-  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
-  secret  = "ORY_CLIENT_ID_DEVELOPMENT"
+  secret = "ORY_CLIENT_ID_DEVELOPMENT"
 }
 
 data "google_secret_manager_secret_version_access" "ory_client_id_production" {
-  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
-  secret  = "ORY_CLIENT_ID_PRODUCTION"
+  secret = "ORY_CLIENT_ID_PRODUCTION"
 }
 
 data "google_secret_manager_secret_version_access" "ocis_jwt_secret_development" {
-  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
-  secret  = "OCIS_JWT_SECRET_DEVELOPMENT"
+  secret = "OCIS_JWT_SECRET_DEVELOPMENT"
 }
 
 data "google_secret_manager_secret_version_access" "wopisecret_development" {
-  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
-  secret  = "OCIS_WOPISECRET_DEVELOPMENT"
+  secret = "OCIS_WOPISECRET_DEVELOPMENT"
 }
 
 data "google_secret_manager_secret_version_access" "iopsecret_development" {
-  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
-  secret  = "OCIS_IOPSECRET_DEVELOPMENT"
+  secret = "OCIS_IOPSECRET_DEVELOPMENT"
 }
 
 data "google_secret_manager_secret_version_access" "onlyoffice_jwt_secret_development" {
-  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
-  secret  = "ONLYOFFICE_JWT_SECRET_DEVELOPMENT"
+  secret = "ONLYOFFICE_JWT_SECRET_DEVELOPMENT"
 }
 
 data "google_secret_manager_secret_version_access" "ocis_jwt_secret_production" {
-  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
-  secret  = "OCIS_JWT_SECRET_PRODUCTION"
+  secret = "OCIS_JWT_SECRET_PRODUCTION"
 }
 
 data "google_secret_manager_secret_version_access" "wopisecret_production" {
-  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
-  secret  = "OCIS_WOPISECRET_PRODUCTION"
+  secret = "OCIS_WOPISECRET_PRODUCTION"
 }
 
 data "google_secret_manager_secret_version_access" "iopsecret_production" {
-  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
-  secret  = "OCIS_IOPSECRET_PRODUCTION"
+  secret = "OCIS_IOPSECRET_PRODUCTION"
 }
 
 data "google_secret_manager_secret_version_access" "onlyoffice_jwt_secret_production" {
-  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
-  secret  = "ONLYOFFICE_JWT_SECRET_PRODUCTION"
+  secret = "ONLYOFFICE_JWT_SECRET_PRODUCTION"
 }
 
 # START encrypted storage buckets
 data "google_storage_project_service_account" "gcs_account" {
-  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
 }
 
 # dev
@@ -100,23 +87,6 @@ resource "google_storage_bucket" "development_ocis" {
 
 # production
 
-resource "google_kms_crypto_key" "ocis_production_bucket_key" {
-  name     = "ocis-production-bucket-key"
-  key_ring = data.terraform_remote_state.holi_infra_state.outputs.kms_shared_key_ring_id
-
-  lifecycle {
-    prevent_destroy = true
-  }
-}
-
-resource "google_kms_crypto_key_iam_binding" "ocis_production_bucket_key_binding" {
-  crypto_key_id = google_kms_crypto_key.ocis_production_bucket_key.id
-  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
-  members = [
-    "serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}",
-  ]
-}
-
 resource "google_storage_bucket" "production_ocis" {
   project       = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
   name          = "cloud-production-ocis"
@@ -126,11 +96,11 @@ resource "google_storage_bucket" "production_ocis" {
   public_access_prevention    = "enforced"
   uniform_bucket_level_access = true
 
-  encryption {
+  encryption { # needs no extra key, can use development to save money
     default_kms_key_name = google_kms_crypto_key.ocis_development_bucket_key.id
   }
 
-  depends_on = [google_kms_crypto_key_iam_binding.ocis_production_bucket_key_binding]
+  depends_on = [google_kms_crypto_key_iam_binding.ocis_development_bucket_key_binding]
 }
 # END encrypted storage buckets
 

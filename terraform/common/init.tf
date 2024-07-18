@@ -15,9 +15,11 @@ data "terraform_remote_state" "holi_infra_state" {
 
 # provider google including beta features
 provider "google" {
-  region = local.default_region
+  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
+  region  = local.default_region
 }
 
 provider "google-beta" {
-  region = local.default_region
+  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
+  region  = local.default_region
 }

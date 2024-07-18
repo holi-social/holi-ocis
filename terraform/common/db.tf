@@ -1,7 +1,6 @@
 # Development database configuratrion
 data "google_secret_manager_secret_version_access" "onlyoffice_db_password_development" {
-  secret  = "ONLYOFFICE_DB_PASSWORD_DEVELOPMENT"
-  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
+  secret = "ONLYOFFICE_DB_PASSWORD_DEVELOPMENT"
 }
 
 resource "google_sql_user" "onlyoffice_db_user_development" {
@@ -19,8 +18,7 @@ resource "google_sql_database" "onlyoffice_db_development" {
 
 # Production database configuratrion
 data "google_secret_manager_secret_version_access" "onlyoffice_db_password_production" {
-  secret  = "ONLYOFFICE_DB_PASSWORD_PRODUCTION"
-  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
+  secret = "ONLYOFFICE_DB_PASSWORD_PRODUCTION"
 }
 
 resource "google_sql_user" "onlyoffice_db_user_production" {

@@ -6,10 +6,9 @@ resource "google_dns_managed_zone" "cloud_zone" {
 }
 
 resource "google_dns_record_set" "cloud_zone_entry" {
-  project = data.terraform_remote_state.holi_infra_state.outputs.shared_project_id
-  name    = google_dns_managed_zone.cloud_zone.dns_name
-  type    = "NS"
-  ttl     = 300
+  name = google_dns_managed_zone.cloud_zone.dns_name
+  type = "NS"
+  ttl  = 300
 
   managed_zone = data.terraform_remote_state.holi_infra_state.outputs.dns_sld_zone_name
 
