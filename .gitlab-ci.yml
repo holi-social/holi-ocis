@@ -18,7 +18,6 @@ deploy:
 
   script:
     - cd terraform/common/
-    - export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_CLOUD_SERVICE_ACCOUNT}
     - terraform init
     - terraform apply -auto-approve
   only:
