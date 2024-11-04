@@ -1,0 +1,26 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+      "config:recommended",
+      ":configMigration",
+      ":label('renovatebot')",
+      ":enableVulnerabilityAlertsWithLabel('renovatebot/security')",
+      ":semanticCommits",
+      ":automergePatch",
+      ":automergeTesters",
+      ":automergeLinters"
+    ],
+    "packageRules": [
+      {
+        "matchSourceUrls": [
+          "https://github.com/hashicorp/terraform"
+        ],
+        "groupName": "terraform"
+      },
+      {
+        "matchManagers": ["docker-compose"],
+        "groupName": "docker-tags"
+      }
+    ]
+  }
+  
