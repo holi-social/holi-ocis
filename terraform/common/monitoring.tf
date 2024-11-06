@@ -75,7 +75,7 @@ resource "google_monitoring_uptime_check_config" "cloud_production_onlyoffice" {
 
 resource "google_monitoring_alert_policy" "ocis_disk_utilization_production" {
   display_name          = "COMO: OCIS disk utilization (production)"
-  notification_channels = [data.terraform_remote_state.holi_infra_state.outputs.monitoring_notification_channel_rocket_chat_production_id]
+  notification_channels = [data.terraform_remote_state.holi_infra_monitoring_state.outputs.monitoring_notification_channel_rocket_chat_production_id]
   severity              = "WARNING"
   alert_strategy {
     auto_close = "86400s" # 1 day
@@ -109,7 +109,7 @@ resource "google_monitoring_alert_policy" "ocis_disk_utilization_production" {
 
 resource "google_monitoring_alert_policy" "ocis_disk_utilization_development" {
   display_name          = "COMO: OCIS disk utilization (development)"
-  notification_channels = [data.terraform_remote_state.holi_infra_state.outputs.monitoring_notification_channel_rocket_chat_staging_id]
+  notification_channels = [data.terraform_remote_state.holi_infra_monitoring_state.outputs.monitoring_notification_channel_rocket_chat_staging_id]
   severity              = "WARNING"
   alert_strategy {
     auto_close = "86400s" # 1 day
