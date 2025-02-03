@@ -1,5 +1,8 @@
 #! /bin/bash
 
+# don't execute the startup script on reboots
+if [[ -f /etc/startup_script_was_run_successfully ]]; then exit 0; fi
+
 # Install ownCloud Infinite Scale
 if [[ ! -d "/etc/ocis/" ]]; then
   sudo bash -c 'cat > /etc/systemd/journald.conf' << 'EOF'
@@ -654,4 +657,4 @@ EOF
   sudo systemctl restart ocis
 fi
 
-
+touch /etc/startup_script_was_run_successfully
