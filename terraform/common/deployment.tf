@@ -129,7 +129,7 @@ resource "google_compute_instance" "development_ocis" {
 
   metadata = {
     # used instead of metadata_startup_script which forces the VM to be recreated upon changes of contents
-    # this startup-script is executed on every reboot
+    # this startup-script is executed on every reboot but the script is smart and checks ocis presence
     startup-script = templatefile(
       "${path.module}/scripts/init-ocis.sh",
       {
@@ -165,7 +165,7 @@ resource "google_compute_instance" "development_ocis" {
     ]
   }
 
-  tags = ["http-server", "https-server"]
+  tags = ["http-server", "https-server", "block-ssh"]
 }
 
 resource "google_compute_instance" "production_ocis" {
@@ -192,7 +192,7 @@ resource "google_compute_instance" "production_ocis" {
 
   metadata = {
     # used instead of metadata_startup_script which forces the VM to be recreated upon changes of contents
-    # this startup-script is executed on every reboot
+    # this startup-script is executed on every reboot but the script is smart and checks ocis presence
     startup-script = templatefile(
       "${path.module}/scripts/init-ocis.sh",
       {
@@ -228,7 +228,7 @@ resource "google_compute_instance" "production_ocis" {
     ]
   }
 
-  tags = ["http-server", "https-server"]
+  tags = ["http-server", "https-server", "block-ssh"]
 }
 
 locals {
