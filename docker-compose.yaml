@@ -4,7 +4,7 @@ version: "3.7"
 
 services:
   traefik:
-    image: traefik:v2.9.10
+    image: traefik:v2.11.24
     container_name: traefik
     networks:
       ocis-net:
